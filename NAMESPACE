@@ -1,0 +1,6 @@
+
+export(mod.symm.test)
+export(get_V)
+export(Cquantile)
+importFrom(Rcpp,evalCpp)
+useDynLib(modsymmtest, .registration= TRUE)

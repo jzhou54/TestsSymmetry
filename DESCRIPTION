@@ -1,0 +1,15 @@
+Package: modsymmtest
+Type: Package
+Title: Modified Symmetry Test
+Version: 1.0
+Date: 2022-12-5
+Author: Jiaojiao Zhou <jzhou54@buffalo.edu>
+Maintainer: Jiaojiao Zhou <jzhou54@buffalo.edu>
+Description: Provides functionality of testing whether a data set comes from a symmetric distribution when the center of symmetry is unknown.
+    Including modified sign test and modified wilcox test.
+License: GPL-3
+Encoding: UTF-8
+Imports: 
+    Rcpp
+LinkingTo: Rcpp
+RoxygenNote: 7.2.2.9000
