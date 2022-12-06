@@ -5,6 +5,7 @@ Cquantile <- function(x, q) {
     .Call(`_modsymmtest_Cquantile`, x, q)
 }
 
+#' @export
 get_V <- function(x_, y_ = NULL) {
     .Call(`_modsymmtest_get_V`, x_, y_)
 }

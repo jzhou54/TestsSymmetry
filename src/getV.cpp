@@ -9,6 +9,7 @@ NumericVector Cquantile(NumericVector x, NumericVector q) {
 }
 
 
+//' @export
 // [[Rcpp::export]]
 double get_V(NumericVector x_,
              Nullable<NumericVector> y_ = R_NilValue) {
@@ -69,7 +70,8 @@ double get_V(NumericVector x_,
   // Asymptotic mean and variance
   double V1 = nx*(nx+1)*(2*nx+1)/24;
   double V2 = nx*(nx-1)*(nx-3) * hat_theta * hat_tau;
-  double V3 = (nx-1)*(nx-2)*(nx-3)*(nx-4)*sigma2/(4*nx)*pow(hat_theta,2);
+  double V3_p1 = nx-4;
+  double V3 = V3_p1*(nx-3)*(nx-2)*(nx-1)*sigma2/(4*nx)*pow(hat_theta,2);
   double V = V1 - V2 + V3;
   
   // output
