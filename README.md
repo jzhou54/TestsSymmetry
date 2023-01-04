@@ -1,5 +1,5 @@
 # modsymmtest
-Modified symmetry testing
+Modified symmetry test
 
 Provide functionality to test the symmetry characteristic of a data, or paired data sets.
 
@@ -17,4 +17,4 @@ To install this package, use the statement below in R:
   mod.symm.test(x, y=NULL, alternative="two.sided", method="wilcox")
  ```
  
- In this function, two methods are incorporated, one is modified wilcoxon sign rank test and the other is modified sign test. 
+ In this function, two methods are incorporated, one is modified wilcoxon rank test and the other is modified sign test. 

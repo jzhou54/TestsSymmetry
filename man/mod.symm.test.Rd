@@ -2,7 +2,7 @@
 % Please edit documentation in R/modsymmtest.R
 \name{mod.symm.test}
 \alias{mod.symm.test}
-\title{Modified symmetric test when the center of symmetry is unknown}
+\title{Modified symmetry test when the center of symmetry is unknown}
 \usage{
 mod.symm.test(
   x,
@@ -20,9 +20,29 @@ mod.symm.test(
 greater: test whether positively skewed (right-skewed),
 less : test whether negatively skewed (left-skewed)}
 
-\item{method}{a character string specifying which symmetric test to be used, "wilcox" is modified wilcoxon sign rank test,
+\item{method}{a character string specifying which symmetry test to be used, "wilcox" is modified wilcoxon sign rank test,
 and "sign" is modified sign test.}
 }
+\value{
+A list of class "htest" containing the following components:
+  \itemize{
+  \item statistic - the value of the test statistic.
+  \item var - the asymptotic variance.
+  \item alternative - a character string describing the alternative hypothesis.
+  \item p.value - the p-value for the test.
+  \item method - the type of test applied.
+
+  }
+}
 \description{
-Provides one unified symmetric test that incorporates two methods, "wilcox" and "sign". Also, paired data can be tested.
+Provides one unified symmetry test that incorporates two methods, "wilcox" and "sign". Also, paired data can be tested.
+}
+\examples{
+\dontrun{
+  x <- rnorm(100, 1, 1)
+  y <- rnorm(100)
+  mod.symm.test(x)
+  mod.symm.test(x,y)
+
+}
 }

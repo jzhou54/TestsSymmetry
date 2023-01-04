@@ -1,17 +1,14 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-// [[Rcpp::export]]
-NumericVector Cquantile(NumericVector x, NumericVector q) {
-  NumericVector y = clone(x);
-  std::sort(y.begin(), y.end());
-  return y[x.size()*(q - 0.000000001)];
-}
-
-
+//' @title Getting asymptotic variance of modified wilcox test statistic
+//' @name get_V
+//' @return Asymptotic variance of modified wilcoxon test statistic
+//' @param x_ A data set
+//' @param y_ Another data set, default is NULL
 //' @export
-// [[Rcpp::export]]
-double get_V(NumericVector x_,
+// [[Rcpp::export("getV")]]
+double getV(NumericVector x_,
              Nullable<NumericVector> y_ = R_NilValue) {
   
   NumericVector x = clone(x_);
@@ -40,7 +37,9 @@ double get_V(NumericVector x_,
   
   // Tn selection
   NumericVector quan = {0.25, 0.75};
-  NumericVector r = Cquantile(x, quan);
+  NumericVector rr=clone(x);
+  std::sort(rr.begin(), rr.end());
+  NumericVector r = rr[x.size()*(quan-0.000000001)];
   double h = (r[1] - r[0]) / 1.34;
   double Tn = log(nx)/( 3 * 1.06 * std::min(sd, h));
   

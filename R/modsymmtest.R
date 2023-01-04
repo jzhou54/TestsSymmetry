@@ -1,24 +1,41 @@
 #' @title
-#' Modified symmetric test when the center of symmetry is unknown
+#' Modified symmetry test when the center of symmetry is unknown
 #'
 #' @description
-#' Provides one unified symmetric test that incorporates two methods, "wilcox" and "sign". Also, paired data can be tested.
+#'   Provides one unified symmetry test that incorporates two methods, "wilcox" and "sign". Also, paired data can be tested.
 #'
 #'
 #' @param x data set to be tested
 #' @param y another data set, default is NULL
 #' @param alternative
-#' a character string specifying the alternative hypothesis, must be one of "two sided" (default), "greater", or "less".
-#' greater: test whether positively skewed (right-skewed),
-#' less : test whether negatively skewed (left-skewed)
+#'   a character string specifying the alternative hypothesis, must be one of "two sided" (default), "greater", or "less".
+#'   greater: test whether positively skewed (right-skewed),
+#'   less : test whether negatively skewed (left-skewed)
 #'
 #'
-#' @param method a character string specifying which symmetric test to be used, "wilcox" is modified wilcoxon sign rank test,
-#' and "sign" is modified sign test.
+#' @param method a character string specifying which symmetry test to be used, "wilcox" is modified wilcoxon sign rank test,
+#'   and "sign" is modified sign test.
+#' @returns A list of class "htest" containing the following components:
+#'   \itemize{
+#'   \item statistic - the value of the test statistic.
+#'   \item var - the asymptotic variance.
+#'   \item alternative - a character string describing the alternative hypothesis.
+#'   \item p.value - the p-value for the test.
+#'   \item method - the type of test applied.
 #'
-#' @export
+#'   }
+#' @importFrom stats pnorm wilcox.test var setNames complete.cases
+#' @importFrom Rcpp evalCpp
+#' @useDynLib modsymmtest
+#' @examples 
+#' \dontrun{
+#'   x <- rnorm(100, 1, 1)
+#'   y <- rnorm(100)
+#'   mod.symm.test(x)
+#'   mod.symm.test(x,y)
 #' 
-
+#' }
+#' @export
 mod.symm.test <- function(x, y=NULL,
                           alternative = c("two.sided", "less", "greater"),
                           method = "wilcox")
@@ -80,7 +97,7 @@ mod.symm.test <- function(x, y=NULL,
     #   (n-1)*(n-2)*(n-3)*(n-4)*sigma2/(4*n)*(hat_theta)^2
     
     ## call get_V function
-    V = get_V(x)
+    V = getV(x)
     
     ## The resulting p-value
     pval <- switch (alternative,
@@ -124,6 +141,7 @@ mod.symm.test <- function(x, y=NULL,
                var = V,
                p.value = as.numeric(pval),
                method = METHOD,
+               alternative = alternative,
                data.name = DNAME )
   class(RVAL) <- "htest"
   RVAL

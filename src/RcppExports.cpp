@@ -10,34 +10,21 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// Cquantile
-NumericVector Cquantile(NumericVector x, NumericVector q);
-RcppExport SEXP _modsymmtest_Cquantile(SEXP xSEXP, SEXP qSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type q(qSEXP);
-    rcpp_result_gen = Rcpp::wrap(Cquantile(x, q));
-    return rcpp_result_gen;
-END_RCPP
-}
-// get_V
-double get_V(NumericVector x_, Nullable<NumericVector> y_);
-RcppExport SEXP _modsymmtest_get_V(SEXP x_SEXP, SEXP y_SEXP) {
+// getV
+double getV(NumericVector x_, Nullable<NumericVector> y_);
+RcppExport SEXP _modsymmtest_getV(SEXP x_SEXP, SEXP y_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x_(x_SEXP);
     Rcpp::traits::input_parameter< Nullable<NumericVector> >::type y_(y_SEXP);
-    rcpp_result_gen = Rcpp::wrap(get_V(x_, y_));
+    rcpp_result_gen = Rcpp::wrap(getV(x_, y_));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_modsymmtest_Cquantile", (DL_FUNC) &_modsymmtest_Cquantile, 2},
-    {"_modsymmtest_get_V", (DL_FUNC) &_modsymmtest_get_V, 2},
+    {"_modsymmtest_getV", (DL_FUNC) &_modsymmtest_getV, 2},
     {NULL, NULL, 0}
 };
 
