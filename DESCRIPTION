@@ -1,7 +1,7 @@
 Package: modsymmtest
 Type: Package
 Title: Modified Symmetry Test
-Version: 1.0
+Version: 0.1.0
 Date: 2023-1-3
 Author: Jiaojiao Zhou <jzhou54@buffalo.edu>
 Maintainer: Jiaojiao Zhou <jzhou54@buffalo.edu>
