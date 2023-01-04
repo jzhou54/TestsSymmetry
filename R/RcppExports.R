@@ -2,7 +2,7 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @title Getting asymptotic variance of modified wilcox test statistic
-#' @name get_V
+#' @name getV
 #' @return Asymptotic variance of modified wilcoxon test statistic
 #' @param x_ A data set
 #' @param y_ Another data set, default is NULL
