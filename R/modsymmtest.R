@@ -102,8 +102,8 @@ mod.symm.test <- function(x, y=NULL,
     ## The resulting p-value
     pval <- switch (alternative,
                     "two.sided" =  2 * ( 1 - pnorm(abs(E-STATISTIC)/sqrt(V))),
-                    "greater" = 1 - pnorm( (E -STATISTIC)/sqrt(V) ),
-                    "less" = 1 - pnorm(-(E -STATISTIC)/sqrt(V))
+                    "greater" = 1 - pnorm( (STATISTIC-E)/sqrt(V) ),
+                    "less" = pnorm( (STATISTIC-E)/sqrt(V))
     )
     
   } else if (method == "sign") {
@@ -128,8 +128,8 @@ mod.symm.test <- function(x, y=NULL,
     
     pval <- switch (alternative,
                     "two.sided" =  2 * ( 1 - pnorm(abs(STATISTIC-E)/sqrt(n*V))),
-                    "greater" = 1 - pnorm( (STATISTIC-E)/sqrt(n*V) ),
-                    "less" = 1 - pnorm(-(STATISTIC-E)/sqrt(n*V))
+                    "greater" = 1 - pnorm( -(STATISTIC-E)/sqrt(n*V) ),
+                    "less" = 1-pnorm((STATISTIC-E)/sqrt(n*V))
     )
     
   }
