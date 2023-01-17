@@ -39,7 +39,7 @@ double getV(NumericVector x_,
   NumericVector quan = {0.25, 0.75};
   NumericVector rr=clone(x);
   std::sort(rr.begin(), rr.end());
-  NumericVector r = rr[x.size()*(quan-0.000000001)];
+  NumericVector r = rr[nx*(quan-0.000000001)];
   double h = (r[1] - r[0]) / 1.34;
   double Tn = log(nx)/( 3 * 1.06 * std::min(sd, h));
   
