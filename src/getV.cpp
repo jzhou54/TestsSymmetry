@@ -53,11 +53,22 @@ double getV(NumericVector x_,
   // Estimation of theta
   double theta_res_p1 = 0;
   double theta_res_p2 = 0;
+  
   for (int i = 0; i < nx; i++) {
     for (int j = 0; j < nx; j++) {
-      theta_res_p2 = theta_res_p2 +  sin(2*M_PI*(x[i]+x[j]-2*m)) / (M_PI*(x[i]+x[j]-2*m));
+      if (x[i]+x[j]-2*m == 0){
+        theta_res_p2 = theta_res_p2 + 2*Tn;
+      }else{
+        theta_res_p2 = theta_res_p2 +  sin(2*M_PI*Tn*(x[i]+x[j]-2*m)) / (M_PI*(x[i]+x[j]-2*m));
+      };
+      
+     
       if (i != j) {
-        theta_res_p1 = theta_res_p1 + sin(2*M_PI*(x[i]-x[j])) / (M_PI*(x[i]-x[j]));
+        if (x[i]-x[j] == 0) {
+          theta_res_p1 = theta_res_p1 +  2*Tn;
+        }else{
+          theta_res_p1 = theta_res_p1 + sin(2*M_PI*Tn*(x[i]-x[j])) / (M_PI*(x[i]-x[j]));
+        };
       };
     };
   };
