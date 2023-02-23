@@ -20,8 +20,8 @@ mod.symm.test(
 greater: test whether positively skewed (right-skewed),
 less : test whether negatively skewed (left-skewed)}
 
-\item{method}{a character string specifying which symmetry test to be used, "wilcox" is modified wilcoxon sign rank test,
-and "sign" is modified sign test.}
+\item{method}{a character string specifying which symmetry test to be used, "wilcox" refers to wilcoxon signed rank test,
+and "sign" is sign test.}
 }
 \value{
 A list of class "htest" containing the following components:
@@ -35,7 +35,13 @@ A list of class "htest" containing the following components:
   }
 }
 \description{
-Provides one unified symmetry test that incorporates two methods, "wilcox" and "sign". Also, paired data can be tested.
+Provides functionality that evaluate the effect of estimating the center of symmetry by sample mean
+ on the signed-rank Wilcoxon test and sign test for symmetry. Also, paired data can be tested.
+}
+\details{
+When "wilcox", the default method is used, the test statistic W is the statistic of signed-rank wilcox.test using sample mean 
+as the center of symmetry; if the method "sign" is specified, the test statistic S would be the total number of the observations 
+that smaller than sample mean. The asymptotic property of S could be found in the paper of Joseph Gastwirth.
 }
 \examples{
 \dontrun{
@@ -45,4 +51,7 @@ Provides one unified symmetry test that incorporates two methods, "wilcox" and "
   mod.symm.test(x,y)
 
 }
+}
+\author{
+Jiaojiao Zhou, Xinyu Gao
 }

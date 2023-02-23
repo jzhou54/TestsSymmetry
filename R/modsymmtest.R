@@ -2,7 +2,8 @@
 #' Modified symmetry test when the center of symmetry is unknown
 #'
 #' @description
-#'   Provides one unified symmetry test that incorporates two methods, "wilcox" and "sign". Also, paired data can be tested.
+#'  Provides functionality that evaluate the effect of estimating the center of symmetry by sample mean
+#'  on the signed-rank Wilcoxon test and sign test for symmetry. Also, paired data can be tested.
 #'
 #'
 #' @param x data set to be tested
@@ -13,8 +14,11 @@
 #'   less : test whether negatively skewed (left-skewed)
 #'
 #'
-#' @param method a character string specifying which symmetry test to be used, "wilcox" is modified wilcoxon sign rank test,
-#'   and "sign" is modified sign test.
+#' @param method a character string specifying which symmetry test to be used, "wilcox" refers to wilcoxon signed rank test,
+#'   and "sign" is sign test.
+#'   
+#'   
+#'   
 #' @returns A list of class "htest" containing the following components:
 #'   \itemize{
 #'   \item statistic - the value of the test statistic.
@@ -24,6 +28,14 @@
 #'   \item method - the type of test applied.
 #'
 #'   }
+#'  
+#' @details 
+#' When "wilcox", the default method is used, the test statistic W is the statistic of signed-rank wilcox.test using sample mean 
+#' as the center of symmetry; if the method "sign" is specified, the test statistic S would be the total number of the observations 
+#' that smaller than sample mean. The asymptotic property of S could be found in the paper of Joseph Gastwirth.      
+#'   
+#' @author Jiaojiao Zhou, Xinyu Gao
+#' 
 #' @importFrom stats pnorm wilcox.test var setNames complete.cases
 #' @importFrom Rcpp evalCpp
 #' @useDynLib modsymmtest
@@ -73,7 +85,13 @@ mod.symm.test <- function(x, y=NULL,
     METHOD <- "Modified wilcoxon signed rank test"
     
     ## Test statistic
-    STATISTIC <- setNames(as.numeric(wilcox.test(x,mu=m)$statistic), "W")
+    # STATISTIC <- setNames(as.numeric(wilcox.test(x,mu=m)$statistic), "W")
+    
+    xc_abs <- abs(xc)
+    xc_abs_rank <- rank(xc_abs)
+    STATISTIC <- sum(xc_abs_rank*(xc>0))
+    STATISTIC <- setNames(STATISTIC, "W")
+    
     
     # ## Tn selection
     # r <- quantile(x, c(0.25, 0.75))
