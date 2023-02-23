@@ -1,8 +1,9 @@
 #' @title
-#' Modified symmetry test when the center of symmetry is unknown
+#' Modified test for symmetry when the center of symmetry is unknown
 #'
 #' @description
-#'  Provides functionality that evaluate the effect of estimating the center of symmetry by sample mean
+#' The common method to symmetry test is wilcox.test() if the center of symmetry is known, We modified this procedure 
+#' given the center of symmetry is unknown. It provides functionality that evaluate the effect of estimating the center of symmetry by sample mean
 #'  on the signed-rank Wilcoxon test and sign test for symmetry. Also, paired data can be tested.
 #'
 #'
