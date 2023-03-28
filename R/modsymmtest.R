@@ -5,7 +5,7 @@
 #' wilcox.test() is the standard nonparametric approach for location test which requires prior knowledge 
 #' of the location center. This program modifies the procedure by allowing for the 
 #' estimation of the center of symmetry using sample mean, given the location parameter is unknown. 
-#' It provides functionality that test symmetry on the signed-rank Wilcoxon signed-rank test or sign test, 
+#' It provides functionality that test symmetry on the Wilcoxon signed-rank test or sign test, 
 #' and it can also test the symmetry of paired differences. 
 #'
 #'
