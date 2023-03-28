@@ -2,13 +2,15 @@
 #' Modified test for symmetry when the center of symmetry is unknown
 #'
 #' @description
-#' The common method to symmetry test is wilcox.test() if the center of symmetry is known, We modified this procedure 
-#' given the center of symmetry is unknown. It provides functionality that evaluate the effect of estimating the center of symmetry by sample mean
-#'  on the signed-rank Wilcoxon test and sign test for symmetry. Also, paired data can be tested.
+#' wilcox.test() is the standard nonparametric approach for location test which requires prior knowledge 
+#' of the location center. This program modifies the procedure by allowing for the 
+#' estimation of the center of symmetry using sample mean, given the location parameter is unknown. 
+#' It provides functionality that test symmetry on the signed-rank Wilcoxon signed-rank test or sign test, 
+#' and it can also test the symmetry of paired differences. 
 #'
 #'
 #' @param x data set to be tested
-#' @param y another data set, default is NULL
+#' @param y another data set to paired with, default is NULL
 #' @param alternative
 #'   a character string specifying the alternative hypothesis, must be one of "two sided" (default), "greater", or "less".
 #'   greater: test whether positively skewed (right-skewed),
@@ -31,12 +33,14 @@
 #'   }
 #'  
 #' @details 
-#' When "wilcox", the default method is used, the test statistic W is the statistic of signed-rank wilcox.test using sample mean 
-#' as the center of symmetry; if the method "sign" is specified, the test statistic S would be the total number of the observations 
-#' that smaller than sample mean. The asymptotic property of S could be found in the paper of Joseph Gastwirth.      
+#' When "wilcox", the default method, is used, the test statistic W is the statistic 
+#' of signed-rank wilcox.test using sample mean as the estimation of center of symmetry; 
+#' if the method "sign" is specified, the test statistic S would be the total number of 
+#' the observations that smaller than sample mean. The asymptotic property of S 
+#' could be found in the paper of Joseph Gastwirth.      
 #'   
-#' @author Jiaojiao Zhou, Xinyu Gao
-#' 
+#' @author Jiaojiao Zhou, Xinyu Gao, Albert Vexler
+#'  
 #' @importFrom stats pnorm wilcox.test var setNames complete.cases
 #' @importFrom Rcpp evalCpp
 #' @useDynLib modsymmtest
@@ -44,8 +48,10 @@
 #' \dontrun{
 #'   x <- rnorm(100, 1, 1)
 #'   y <- rnorm(100)
+#'   z <- rchisq(100, df=5)
 #'   mod.symm.test(x)
 #'   mod.symm.test(x,y)
+#'   mod.symm.test(z, alternative="less")
 #' 
 #' }
 #' @export

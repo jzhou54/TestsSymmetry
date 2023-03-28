@@ -14,7 +14,7 @@ mod.symm.test(
 \arguments{
 \item{x}{data set to be tested}
 
-\item{y}{another data set, default is NULL}
+\item{y}{another data set to paired with, default is NULL}
 
 \item{alternative}{a character string specifying the alternative hypothesis, must be one of "two sided" (default), "greater", or "less".
 greater: test whether positively skewed (right-skewed),
@@ -35,24 +35,30 @@ A list of class "htest" containing the following components:
   }
 }
 \description{
-The common method to symmetry test is wilcox.test() if the center of symmetry is known, We modified this procedure 
-given the center of symmetry is unknown. It provides functionality that evaluate the effect of estimating the center of symmetry by sample mean
- on the signed-rank Wilcoxon test and sign test for symmetry. Also, paired data can be tested.
+wilcox.test() is the standard nonparametric approach for location test which requires prior knowledge 
+of the location center. This program modifies the procedure by allowing for the 
+estimation of the center of symmetry using sample mean, given the location parameter is unknown. 
+It provides functionality that test symmetry on the signed-rank Wilcoxon signed-rank test or sign test, 
+and it can also test the symmetry of paired differences.
 }
 \details{
-When "wilcox", the default method is used, the test statistic W is the statistic of signed-rank wilcox.test using sample mean 
-as the center of symmetry; if the method "sign" is specified, the test statistic S would be the total number of the observations 
-that smaller than sample mean. The asymptotic property of S could be found in the paper of Joseph Gastwirth.
+When "wilcox", the default method, is used, the test statistic W is the statistic 
+of signed-rank wilcox.test using sample mean as the estimation of center of symmetry; 
+if the method "sign" is specified, the test statistic S would be the total number of 
+the observations that smaller than sample mean. The asymptotic property of S 
+could be found in the paper of Joseph Gastwirth.
 }
 \examples{
 \dontrun{
   x <- rnorm(100, 1, 1)
   y <- rnorm(100)
+  z <- rchisq(100, df=5)
   mod.symm.test(x)
   mod.symm.test(x,y)
+  mod.symm.test(z, alternative="less")
 
 }
 }
 \author{
-Jiaojiao Zhou, Xinyu Gao
+Jiaojiao Zhou, Xinyu Gao, Albert Vexler
 }
