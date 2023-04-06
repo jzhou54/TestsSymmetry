@@ -2,7 +2,7 @@
 % Please edit documentation in R/modsymmtest.R
 \name{mod.symm.test}
 \alias{mod.symm.test}
-\title{Modified test for symmetry when the center of symmetry is unknown}
+\title{Wilcoxon and Sign tests for symmetry about an unknown center}
 \usage{
 mod.symm.test(
   x,
@@ -12,15 +12,16 @@ mod.symm.test(
 )
 }
 \arguments{
-\item{x}{data set to be tested}
+\item{x}{numeric vector of data values. Non-finite (e.g., infinite or missing) values will be omitted.}
 
-\item{y}{another data set to paired with, default is NULL}
+\item{y}{an optional numeric vector of data values: as with x non-finite values will be omitted.}
 
 \item{alternative}{a character string specifying the alternative hypothesis, must be one of "two sided" (default), "greater", or "less".
-greater: test whether positively skewed (right-skewed),
-less : test whether negatively skewed (left-skewed)}
+You can specify just the initial letter.
+"greater": test whether positively skewed (right-skewed), 
+"less" : test whether negatively skewed (left-skewed).}
 
-\item{method}{a character string specifying which symmetry test to be used, "wilcox" refers to wilcoxon signed rank test,
+\item{method}{a character string specifying which symmetry test to be used, "wilcox" refers to Wilcoxon signed-rank test,
 and "sign" is sign test.}
 }
 \value{
@@ -35,29 +36,38 @@ A list of class "htest" containing the following components:
   }
 }
 \description{
-wilcox.test() is the standard nonparametric approach for location test which requires prior knowledge 
-of the location center. This program modifies the procedure by allowing for the 
-estimation of the center of symmetry using sample mean, given the location parameter is unknown. 
-It provides functionality that test symmetry on the Wilcoxon signed-rank test or sign test, 
-and it can also test the symmetry of paired differences.
+R built-in function `wilcox.test()` performs one- and two-sample Wilcoxon test for symmetry 
+when the center of symmetry is known. The procedure `mod.symm.test()` provides modifications 
+to `wilcox.test()` in the case when the center of symmetry is unknown.
 }
 \details{
-When "wilcox", the default method, is used, the test statistic W is the statistic 
-of signed-rank wilcox.test using sample mean as the estimation of center of symmetry; 
-if the method "sign" is specified, the test statistic S would be the total number of 
-the observations that smaller than sample mean. The asymptotic property of S 
-could be found in the paper of Joseph Gastwirth.
+When "wilcox", the default method, is used, the test statistic W has the form 
+of the Wilcoxon test statistic with unknown center of symmetry replaced by its sample estimator.
+For details, see Vexler et al. (2023)
+
+When method="sign", the test statistic S is the total number of 
+the observations that smaller than sample mean.For more details, see Gastwitrh (1971).
 }
 \examples{
 \dontrun{
-  x <- rnorm(100, 1, 1)
-  y <- rnorm(100)
-  z <- rchisq(100, df=5)
-  mod.symm.test(x)
-  mod.symm.test(x,y)
-  mod.symm.test(z, alternative="less")
+  # A study measures the plasma silicon levels before and after silicone implants surgery
+  # in 30 women to evaluate the effect of the surgery.
+  data("plasma.silicon")
+  post <- plasma.silicon$postoperative 
+  pre <- plasma.silicon$preoperative
+  # post <- c(0.21,0.24,0.1,0.12,0.28,0.25,0.22,0.21,0.22,0.23,0.22,0.24,0.45,0.38,
+  #           0.23,0.22,0.18,0.15,0.04,0.14,0.24,0.2,0.24,0.18,0.19,0.15,0.26,0.3,0.22,0.24)
+  # pre <- c(0.15,0.13,0.39,0.2,0.39,0.42,0.24,0.18,0.26,0.12,0.1,0.11,0.19, 0.15,0.27,
+  #          0.28,0.11,0.11,0.18,0.18,0.24,0.48,0.27,0.22,0.18,0.19,0.32,0.31,0.19,0.21)
+  mod.symm.test(post, pre)
 
 }
+}
+\references{
+{
+Vexler, A., Gao, X., & Zhou, J. (2023). How to implement signed-rank wilcox. test () type procedures when a center of symmetry is unknown. Computational Statistics & Data Analysis, 107746. 
+
+Gastwirth, J. L. (1971). On the sign test for symmetry. Journal of the American Statistical Association, 66(336), 821-823.}
 }
 \author{
 Jiaojiao Zhou, Xinyu Gao, Albert Vexler
