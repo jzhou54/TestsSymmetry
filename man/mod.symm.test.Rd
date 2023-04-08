@@ -67,7 +67,8 @@ the observations that smaller than sample mean.For more details, see Gastwitrh (
 {
 Vexler, A., Gao, X., & Zhou, J. (2023). How to implement signed-rank wilcox. test () type procedures when a center of symmetry is unknown. Computational Statistics & Data Analysis, 107746. 
 
-Gastwirth, J. L. (1971). On the sign test for symmetry. Journal of the American Statistical Association, 66(336), 821-823.}
+Gastwirth, J. L. (1971). On the sign test for symmetry. Journal of the American Statistical Association, 66(336), 821-823.
+}
 }
 \author{
 Jiaojiao Zhou, Xinyu Gao, Albert Vexler

@@ -98,7 +98,7 @@ mod.symm.test <- function(x, y=NULL,
   
   
   if (method == "wilcox"){
-    METHOD <- "Modified wilcoxon signed rank test"
+    METHOD <- "Modified Wilcoxon signed-rank test"
     
     ## Test statistic
     # STATISTIC <- setNames(as.numeric(wilcox.test(x,mu=m)$statistic), "W")

@@ -10,10 +10,6 @@
   distribution when the center of symmetry is unknown, including modified wilcoxon test 
   and modified sign test. In addition, sample size calculated is provided. 
 }
-\details{
-  This section should provide a more detailed overview of how to use the
-  package, including the most important functions.
-}
 \author{
 Jiaojiao Zhou, Xinyu Gao, Albert Vexler
 
@@ -25,9 +21,6 @@ Maintainer: Jiaojiao Zhou <woerge99@gmail.com>
   Gastwirth, J. L. (1971). On the sign test for symmetry. Journal of the American Statistical Association, 66(336), 821-823.
 }
 \keyword{ package }
-\seealso{
-  Optional links to other man pages
-}
 \examples{
   \dontrun{
     data("plasma.silicon")
