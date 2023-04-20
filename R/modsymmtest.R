@@ -10,10 +10,10 @@
 #' @param x numeric vector of data values. Non-finite (e.g., infinite or missing) values will be omitted.
 #' @param y an optional numeric vector of data values: as with x non-finite values will be omitted.
 #' @param alternative
-#'   a character string specifying the alternative hypothesis, must be one of "two sided" (default), "greater", or "less".
+#'   a character string specifying the alternative hypothesis, must be one of "two sided" (default), "right.skewed", or "left.skewed".
 #'   You can specify just the initial letter.
-#'   "greater": test whether positively skewed (right-skewed), 
-#'   "less" : test whether negatively skewed (left-skewed).
+#'   "right.skewed": test whether positively skewed, 
+#'   "left.skewed" : test whether negatively skewed.
 #' @param method a character string specifying which symmetry test to be used, "wilcox" refers to Wilcoxon signed-rank test,
 #'   and "sign" is sign test.
 #'   
@@ -60,12 +60,24 @@
 #'   #           0.23,0.22,0.18,0.15,0.04,0.14,0.24,0.2,0.24,0.18,0.19,0.15,0.26,0.3,0.22,0.24)
 #'   # pre <- c(0.15,0.13,0.39,0.2,0.39,0.42,0.24,0.18,0.26,0.12,0.1,0.11,0.19, 0.15,0.27,
 #'   #          0.28,0.11,0.11,0.18,0.18,0.24,0.48,0.27,0.22,0.18,0.19,0.32,0.31,0.19,0.21)
-#'   mod.symm.test(post, pre)
+#'   mod.symm.test(x=post, y=pre, alternative ="two.sided", method = "wilcox")
+#'   
+#'   Result:
+#'   Modified Wilcoxon signed-rank test
+#'   data:  post and pre
+#'   W = 238, p-value = 0.767
+#'   alternative hypothesis: two.side
+#'   
+#'   Interpretation:
+#'   This is no clue to reject the hypothesis that the difference of plasma silicon 
+#'   levels before and after silicone implants surgery is symmetric.
+#'   
+#'   mod.symm.test(x=post, y=pre, alternative ="greater", method = "wilcox")
 #' 
 #' }
 #' @export
 mod.symm.test <- function(x, y=NULL,
-                          alternative = c("two.sided", "less", "greater"),
+                          alternative = c("two.sided", "left.skewed", "right.skewed"),
                           method = "wilcox")
 {
   alternative <- match.arg(alternative)
@@ -108,27 +120,8 @@ mod.symm.test <- function(x, y=NULL,
     STATISTIC <- sum(xc_abs_rank*(xc>0))
     STATISTIC <- setNames(STATISTIC, "W")
     
-    
-    # ## Tn selection
-    # r <- quantile(x, c(0.25, 0.75))
-    # h <- (r[2] - r[1])/1.34
-    # Tn<-log(n)/( 3 * 1.06 * min(sqrt(var(x)), h))
-    #
-    # ## Estimation of theta
-    # S <- function(u) sum( sin(2*pi*(xc[xc!=u]-u)*Tn)/(2*pi*(xc[xc!=u]-u)))+
-    #   sum(sin(2*pi*(xc+u)*Tn)/(2*pi*(xc+u)))
-    # SV <- Vectorize(S)
-    # hat_theta <- 2*sum(SV(xc))/n^2 + 2*Tn/n
-    #
-    # ## Estimation of tau
-    # xs <- sort(xc)  # V(i)
-    # S1 <- seq(from=1, to=n, by=1) # i
-    # hat_tau <- sum(xs*S1)/n^2
-    #
-    # ## Asymptotic mean and variance
+    # Asymptotic mean and variance
     E <- n*(n+1)/4
-    # V <- n*(n+1)*(2*n+1)/24 - n*(n-1)*(n-3) * hat_theta * hat_tau +
-    #   (n-1)*(n-2)*(n-3)*(n-4)*sigma2/(4*n)*(hat_theta)^2
     
     ## call get_V function
     V = getV(x)
@@ -136,8 +129,8 @@ mod.symm.test <- function(x, y=NULL,
     ## The resulting p-value
     pval <- switch (alternative,
                     "two.sided" =  2 * ( 1 - pnorm(abs(E-STATISTIC)/sqrt(V))),
-                    "greater" = 1 - pnorm( (STATISTIC-E)/sqrt(V) ),
-                    "less" = pnorm( (STATISTIC-E)/sqrt(V))
+                    "right.skewed" = 1 - pnorm( (E-STATISTIC)/sqrt(V) ),
+                    "left.skewed" = pnorm( (E-STATISTIC)/sqrt(V))
     )
     
   } else if (method == "sign") {
@@ -162,8 +155,8 @@ mod.symm.test <- function(x, y=NULL,
     
     pval <- switch (alternative,
                     "two.sided" =  2 * ( 1 - pnorm(abs(STATISTIC-E)/sqrt(n*V))),
-                    "greater" = 1 - pnorm( -(STATISTIC-E)/sqrt(n*V) ),
-                    "less" = 1-pnorm((STATISTIC-E)/sqrt(n*V))
+                    "right.skewed" = 1 - pnorm((STATISTIC-E)/sqrt(n*V)),
+                    "left.skewed" = 1 - pnorm( -(STATISTIC-E)/sqrt(n*V) )
     )
     
   }

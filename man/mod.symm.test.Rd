@@ -7,7 +7,7 @@
 mod.symm.test(
   x,
   y = NULL,
-  alternative = c("two.sided", "less", "greater"),
+  alternative = c("two.sided", "left.skewed", "right.skewed"),
   method = "wilcox"
 )
 }
@@ -16,10 +16,10 @@ mod.symm.test(
 
 \item{y}{an optional numeric vector of data values: as with x non-finite values will be omitted.}
 
-\item{alternative}{a character string specifying the alternative hypothesis, must be one of "two sided" (default), "greater", or "less".
+\item{alternative}{a character string specifying the alternative hypothesis, must be one of "two sided" (default), "right.skewed", or "left.skewed".
 You can specify just the initial letter.
-"greater": test whether positively skewed (right-skewed), 
-"less" : test whether negatively skewed (left-skewed).}
+"right.skewed": test whether positively skewed, 
+"left.skewed" : test whether negatively skewed.}
 
 \item{method}{a character string specifying which symmetry test to be used, "wilcox" refers to Wilcoxon signed-rank test,
 and "sign" is sign test.}
@@ -59,7 +59,19 @@ the observations that smaller than sample mean.For more details, see Gastwitrh (
   #           0.23,0.22,0.18,0.15,0.04,0.14,0.24,0.2,0.24,0.18,0.19,0.15,0.26,0.3,0.22,0.24)
   # pre <- c(0.15,0.13,0.39,0.2,0.39,0.42,0.24,0.18,0.26,0.12,0.1,0.11,0.19, 0.15,0.27,
   #          0.28,0.11,0.11,0.18,0.18,0.24,0.48,0.27,0.22,0.18,0.19,0.32,0.31,0.19,0.21)
-  mod.symm.test(post, pre)
+  mod.symm.test(x=post, y=pre, alternative ="two.sided", method = "wilcox")
+  
+  Result:
+  Modified Wilcoxon signed-rank test
+  data:  post and pre
+  W = 238, p-value = 0.767
+  alternative hypothesis: two.side
+  
+  Interpretation:
+  This is no clue to reject the hypothesis that the difference of plasma silicon 
+  levels before and after silicone implants surgery is symmetric.
+  
+  mod.symm.test(x=post, y=pre, alternative ="greater", method = "wilcox")
 
 }
 }

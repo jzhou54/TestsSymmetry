@@ -4,7 +4,14 @@
 \alias{pwr.symm.test}
 \title{Sample size calculation for Wilcoxon test of symmetry with estimated location}
 \usage{
-pwr.symm.test(x, sig.level = 0.05, power = 0.8, method = "wilcox")
+pwr.symm.test(
+  x,
+  sig.level = 0.05,
+  power = 0.8,
+  method = "wilcox",
+  alternative = c("two.sided", "right.skewed", "left.skewed"),
+  plot.extraplation = FALSE
+)
 }
 \arguments{
 \item{x}{pilot data, numeric vector of data values. Non-finite (e.g., infinite or missing) values will be omitted.}
@@ -15,6 +22,11 @@ pwr.symm.test(x, sig.level = 0.05, power = 0.8, method = "wilcox")
 
 \item{method}{a character string specifying which symmetry test to be used, "wilcox" refers to Wilcoxon signed-rank test,
 and "sign" is sign test.}
+
+\item{alternative}{a character string specifying the alternative hypothesis, must be one of "two sided" (default), "right.skewed", or "left.skewed".
+You can specify just the initial letter.
+"right.skewed": test whether positively skewed, 
+"left.skewed" : test whether negatively skewed.}
 }
 \value{
 A list of class "power.htest" containing the following components:
@@ -31,6 +43,11 @@ with unknown center of symmetry estimated by sample mean.
 }
 \details{
 Title
+}
+\examples{
+x <- rgamma(30, shape=2, scale=2)
+pwr.symm.test(x, sig.level = 0.05, power = 0.8, method="wilcox")
+
 }
 \references{
 {

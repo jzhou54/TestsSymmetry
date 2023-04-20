@@ -12,8 +12,12 @@
 #' @param power Power of test (1 minus Type II error probability)
 #' @param method a character string specifying which symmetry test to be used, "wilcox" refers to Wilcoxon signed-rank test,
 #'   and "sign" is sign test.
+#' @param alternative
+#'   a character string specifying the alternative hypothesis, must be one of "two sided" (default), "right.skewed", or "left.skewed".
+#'   You can specify just the initial letter.
+#'   "right.skewed": test whether positively skewed, 
+#'   "left.skewed" : test whether negatively skewed.
 #'   
-  
 #' @returns A list of class "power.htest" containing the following components:
 #'    \itemize{
 #'   \item n - sample size 
@@ -29,14 +33,19 @@
 #' Vexler, A., Gao, X., & Zhou, J. (2023). How to implement signed-rank wilcox. test () type procedures when a center of symmetry is unknown. Computational Statistics & Data Analysis, 107746. }
 #'
 #' @examples
+#' x <- rgamma(30, shape=2, scale=2)
+#' pwr.symm.test(x, sig.level = 0.05, power = 0.8, method="wilcox")
 #' 
-pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox"){
+pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
+                         alternative = c("two.sided", "right.skewed", "left.skewed"),
+                         plot.extraplation = FALSE){
   
   if(!is.numeric(x)) stop("'x' must be numeric")
   if(length(x) < 1L)
     stop("not enough (finite) 'x' observations")
   
   DNAME <- deparse(substitute(x))
+  alternative <- match.arg(alternative)
   x <- x[is.finite(x)]
   m <- mean(x)
   n <- length(x)
@@ -48,30 +57,12 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox"){
     METHOD <- "Modified Wilcoxon signed-rank test"
    
     ########## estimates under H0 ##########
-    # Box-cox transformation
-    b <- boxcox(lm(x ~ 1), plotit = F)
-    lambda <- b$x[which.max(b$y)]
-    x.sym = (x^lambda - 1)/lambda
-
     
-    # a simple method
-    # x.sym <- rnorm(n, mean = m, sd=sqrt(sigma2.x))
-    # std = sqrt(sigma2.x)
-    # theta0 <- dnorm(0, 0, sd = std/sqrt(2))
-    # tau0 <- std / (2*sqrt(pi))
-    
-    sigma2.x.sym <- var(x.sym)
-    
-    theta0 <- get_quant_H0(x.sym)$theta0
-    tau0 <- get_quant_H0(x.sym)$tau0
+    theta0 <- get_quant_H0(x)$theta0
+    tau0 <- get_quant_H0(x)$tau0
     mu0 <- function(N) N*(N+1)/4
-    # sigma0 <- function(N) sqrt(N*(N+1)*(2*N+1)/24 - N*(N-1)*(N-3) * theta0 * tau0 + 
-    #                              (N-1)*(N-2)*(N-3)*(N-4)*std^2/(4*N)*(theta0)^2)
     sigma0 <- function(N) sqrt(N*(N+1)*(2*N+1)/24 - N*(N-1)*(N-3) * theta0 * tau0 +
-                                 (N-1)*(N-2)*(N-3)*(N-4)*sigma2.x.sym/(4*N)*(theta0)^2)
-    
-
-    # print(data.frame("theta0"=theta0, "tau0"=tau0, "sigma2.x"=std^2))
+                                 (N-1)*(N-2)*(N-3)*(N-4)*sigma2.x/(4*N)*(theta0)^2)
     
     ##### estimates under H1 #####
     
@@ -99,7 +90,7 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox"){
       }else{
         # print("sig1.square<=0")
         sigma1.value <- sqrt(N*(N+1)*(2*N+1)/24 - N*(N-1)*(N-3) * theta0 * tau0 +
-                               (N-1)*(N-2)*(N-3)*(N-4)*sigma2.x.sym/(4*N)*(theta0)^2)
+                               (N-1)*(N-2)*(N-3)*(N-4)*sigma2.x/(4*N)*(theta0)^2)
       }
       
       return(sigma1.value)
@@ -111,13 +102,22 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox"){
     # Normal approximation
     z1 <- function(N) (mu0(N)-mu1(N)+sigma0(N)*z_alpha)/sigma1(N)
     z2 <- function(N) (mu0(N)-mu1(N)-sigma0(N)*z_alpha)/sigma1(N)  
+    z3 <- function(N) (mu0(N)-mu1(N)+sigma0(N)*qnorm(1-sig.level))/sigma1(N) # one-sided
+    z4 <- function(N) (mu0(N)-mu1(N)-sigma0(N)*qnorm(1-sig.level))/sigma1(N) # one-sided
+    if (alternative == "two.sided"){
+      # solve N for function Phi(z1)-Phi(z2)-beta = 0
+      # f <- function(N)  (1/2*( sqrt(1-exp(-2/pi*z1(N)^2)) - sqrt(1-exp(-2/pi*z2(N)^2)) ) - beta)^2 # Polya approximation to standard normal
+      f <- function(N) (pnorm(z1(N)) - pnorm(z2(N))-beta)^2
+      
+    }else if(alternative == "right.skewed"){
+      f <- function(N)  (z3(N) - qnorm(beta) )^2 # one-sided
+    }else if (alternative == "left.skewed"){
+      f <- function(N) (z4(N) -1 + beta)^2
+    }
     
-    # solve N for function Phi(z1)-Phi(z2)-beta = 0
-    # f <- function(N)  (1/2*( sqrt(1-exp(-2/pi*z1(N)^2)) - sqrt(1-exp(-2/pi*z2(N)^2)) ) - beta)^2 # Polya approximation to standard normal
-    f <- function(N) (pnorm(z1(N)) - pnorm(z2(N))-beta)^2
     f <- Vectorize(f, "N")
     
-    getN <-  optimize(f, c(n, 10*n), maximum = F)$minimum
+    getN <-  optimize(f, c(10, 600), maximum = F)$minimum
     getN.int <- ceiling(getN)
     
   }else if (method == "sign"){
@@ -125,15 +125,54 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox"){
     
     }
   
-  
-  ######################################
   ## return list of 'power.htest' class
   RVAL <- list(N = getN.int,
                sig.level = sig.level,
                power = power,
                method = METHOD,
+               alternative = alternative,
                data.name = DNAME
-               )
+  )
+  ### extraplation plot ###
+  if (plot.extraplation == TRUE){
+    MC <- 1000
+    n.seq <- seq(5, n, by=5)
+    p.val <- matrix(NA_real_, nrow = MC, ncol = length(n.seq))
+    colnames(p.val) <- paste0("n",n.seq)
+    
+    ind.col <- 1
+    for (n in n.seq){
+      for (mc in 1:MC){
+        set.seed(mc+n+20230410)
+        x.sub <- sample(x, size=n, replace = T)
+        tryCatch({
+          p.val[mc, ind.col] <- suppressWarnings(mod.symm.test(x.sub)$p.value)
+        }, error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+        
+      }
+      ind.col <- ind.col + 1
+    }
+    
+    p.avg <- colMeans(p.val, na.rm = T) 
+    
+    ## fit model ##
+    mod <- lm(log(p.avg)~n.seq)
+    extrap.n <- 80
+    n.seq.extrap <- seq(from=max(n.seq), to=extrap.n)
+    y.predict <- predict(mod, data.frame(x=n.seq))
+    y.predict.extrap <- exp(mod$coefficients[[1]] + mod$coefficients[[2]]*n.seq.extrap)
+    
+    plot(n.seq, p.avg, pch=16, ylim=c(0,1), xlim=c(5, extrap.n))
+    lines(n.seq, exp(y.predict), col='blue')
+    lines(n.seq.extrap, y.predict.extrap, col="blue", lty=2)
+    abline(h = 0.05, col = "red", lty=2)
+    
+    N.extraplation <- ceiling((log(0.05) - mod$coefficients[[1]] )/mod$coefficients[[2]])
+    RVAL <- c(RVAL, list("N.extraplation" = N.extraplation))
+  }
+  
+  ######################################
+ 
   class(RVAL) <- "power.htest"
   RVAL
 }
