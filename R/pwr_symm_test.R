@@ -104,21 +104,42 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     z2 <- function(N) (mu0(N)-mu1(N)-sigma0(N)*z_alpha)/sigma1(N)  
     z3 <- function(N) (mu0(N)-mu1(N)+sigma0(N)*qnorm(1-sig.level))/sigma1(N) # one-sided
     z4 <- function(N) (mu0(N)-mu1(N)-sigma0(N)*qnorm(1-sig.level))/sigma1(N) # one-sided
+    
     if (alternative == "two.sided"){
-      # solve N for function Phi(z1)-Phi(z2)-beta = 0
       # f <- function(N)  (1/2*( sqrt(1-exp(-2/pi*z1(N)^2)) - sqrt(1-exp(-2/pi*z2(N)^2)) ) - beta)^2 # Polya approximation to standard normal
       f <- function(N) (pnorm(z1(N)) - pnorm(z2(N))-beta)^2
-      
+      power.fn <-  function(N) pnorm(z1(N)) - pnorm(z2(N))-beta
     }else if(alternative == "right.skewed"){
       f <- function(N)  (z3(N) - qnorm(beta) )^2 # one-sided
+      power.fn <-  function(N) z3(N) - qnorm(beta)
     }else if (alternative == "left.skewed"){
-      f <- function(N) (z4(N) -1 + beta)^2
+      f <- function(N) (z4(N) - qnorm(1 - beta))^2
+      power.fn <-  function(N) z4(N) - qnorm(1 - beta)
     }
     
     f <- Vectorize(f, "N")
+    power.fn <- Vectorize(power.fn, "N")
     
-    getN <-  optimize(f, c(10, 600), maximum = F)$minimum
+    getN <-  optimize(f, c(n, 600), maximum = F)$minimum
     getN.int <- ceiling(getN)
+    
+    # getN.initial <-  getN.int
+    # DeltaN <- 10
+    # findN <- FALSE
+    # 
+    # while (getN.initial - DeltaN > 0 && getN.initial + DeltaN < 1000 && findN == FALSE) {  # n = n.pilot
+    #   power.fn.left <- power.fn(getN.initial - DeltaN)
+    #   power.fn.right  <- power.fn(getN.initial + DeltaN)
+    #   
+    #   if (power.fn.left * power.fn.right < 0) {
+    #     getN.int.res <- uniroot(power.fn, lower = getN.initial - DeltaN, upper=getN.initial + DeltaN )
+    #     getN.int <- ceiling(getN.int.res$root)
+    #     findN = TRUE
+    #   }else{
+    #     DeltaN = DeltaN + 10
+    #   }
+    # }
+    
     
   }else if (method == "sign"){
     METHOD <- "Modified sign test"
@@ -157,7 +178,7 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     
     ## fit model ##
     mod <- lm(log(p.avg)~n.seq)
-    extrap.n <- 80
+    extrap.n <- 100
     n.seq.extrap <- seq(from=max(n.seq), to=extrap.n)
     y.predict <- predict(mod, data.frame(x=n.seq))
     y.predict.extrap <- exp(mod$coefficients[[1]] + mod$coefficients[[2]]*n.seq.extrap)
