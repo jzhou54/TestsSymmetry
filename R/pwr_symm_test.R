@@ -52,8 +52,12 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
   z_alpha <- qnorm(1-sig.level/2)
   beta = 1 - power
   
+  est_quant_H1 <- get_quant_H1(x)
+  qx <- est_quant_H1$qx
+  qz <- est_quant_H1$qz
+  
   if (method == "wilcox"){
-    METHOD <- "Modified Wilcoxon signed-rank test"
+    METHOD <- "Modified Wilcoxon signed-rank test power calculation"
    
     ########## estimates under H0 ##########
     
@@ -65,9 +69,7 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     
     ##### estimates under H1 #####
     
-    est_quant_H1 <- get_quant_H1(x)
-    qx <- est_quant_H1$qx
-    qz <- est_quant_H1$qz
+    
     L1 <- est_quant_H1$L1
     L2 <- est_quant_H1$L2
     theta1 <- est_quant_H1$theta1
@@ -96,21 +98,27 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     
     
     # Normal approximation
-    z1 <- function(N) (mu0(N)-mu1(N)+sigma0(N)*z_alpha)/sigma1(N)
-    z2 <- function(N) (mu0(N)-mu1(N)-sigma0(N)*z_alpha)/sigma1(N)  
-    z3 <- function(N) (mu0(N)-mu1(N)+sigma0(N)*qnorm(1-sig.level))/sigma1(N) # right-skewed
-    z4 <- function(N) (mu0(N)-mu1(N)-sigma0(N)*qnorm(1-sig.level))/sigma1(N) # one-sided
+    z_fns <- function(N) {
+      z1 <- (mu0(N)-mu1(N)+sigma0(N)*z_alpha)/sigma1(N)
+      z2 <- (mu0(N)-mu1(N)-sigma0(N)*z_alpha)/sigma1(N)  
+      z3 <- (mu0(N)-mu1(N)+sigma0(N)*qnorm(1-sig.level))/sigma1(N) # right-skewed
+      z4 <- (mu0(N)-mu1(N)-sigma0(N)*qnorm(1-sig.level))/sigma1(N) # one-sided
+      return(list("z1"=z1, "z2"=z2, "z3"=z3, "z4"=z4))
+    }
+    # z1 <- function(N) (mu0(N)-mu1(N)+sigma0(N)*z_alpha)/sigma1(N)
+    # z2 <- function(N) (mu0(N)-mu1(N)-sigma0(N)*z_alpha)/sigma1(N)  
+    # z3 <- function(N) (mu0(N)-mu1(N)+sigma0(N)*qnorm(1-sig.level))/sigma1(N) # right-skewed
+    # z4 <- function(N) (mu0(N)-mu1(N)-sigma0(N)*qnorm(1-sig.level))/sigma1(N) # one-sided
     
     if (alternative == "two.sided"){
-      # f <- function(N)  (1/2*( sqrt(1-exp(-2/pi*z1(N)^2)) - sqrt(1-exp(-2/pi*z2(N)^2)) ) - beta)^2 # Polya approximation to standard normal
-      f <- function(N) (pnorm(z1(N)) - pnorm(z2(N))-beta)^2
-      power.fn <-  function(N) pnorm(z1(N)) - pnorm(z2(N))-beta
+      f <- function(N) (pnorm(z_fns(N)$z1) - pnorm(z_fns(N)$z2)-beta)^2
+      power.fn <-  function(N) pnorm(z_fns(N)$z2) +1 - pnorm(z_fns(N)$z1)
     }else if(alternative == "right.skewed"){
-      f <- function(N)  (z3(N) - qnorm(beta) )^2 
-      power.fn <-  function(N) z3(N) - qnorm(beta)
+      f <- function(N)  (z_fns(N)$z3 - qnorm(beta) )^2 
+      power.fn <-  function(N) 1-pnorm(z_fns(N)$z3) 
     }else if (alternative == "left.skewed"){
-      f <- function(N) (z4(N) - qnorm(1 - beta))^2
-      power.fn <-  function(N) z4(N) - qnorm(1 - beta)
+      f <- function(N) (z_fns(N)$z4 - qnorm(1 - beta))^2
+      power.fn <-  function(N) pnorm(z_fns(N)$z4)
     }
     
     f <- Vectorize(f, "N")
@@ -138,7 +146,48 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     
     
   }else if (method == "sign"){
-    METHOD <- "Modified sign test"
+    METHOD <- "Modified sign test power calculation"
+    ## Estimation of w
+    a <- 1 * (x>m-n^(-1/5)) * (x < m+n^(-1/5))
+    D <- sum(a)
+    A <- max(c(1,D))
+    VHW <- (n^(3/10)/A)^2
+    hat_w <- sqrt(1/(4*n*VHW))
+    E <- n/2
+    CE <- mean((x-m)*(x<m))
+    V0 <- function(n) (1/4 + var(x)*(hat_w)^2 + 2 *hat_w*CE)*n
+    mu0 <- function(n) n/2
+    
+    px <- 1-qx
+    f.x <- function(u) {density(x, from = u, to = u)$y[1] }
+    f.x.mu <- f.x(m)
+    mu1 <- function(n) n*px
+    V1 <- function(n) (px*qx + var(x)*f.x.mu^2 + 2*f.x.mu*CE)*n
+    
+    
+    
+    z1 <- function(N) (mu0(N)-mu1(N)+sigma0(N)*z_alpha)/sigma1(N)
+    z2 <- function(N) (mu0(N)-mu1(N)-sigma0(N)*z_alpha)/sigma1(N)  
+    z3 <- function(N) (mu0(N)-mu1(N)+sigma0(N)*qnorm(1-sig.level))/sigma1(N) # right-skewed
+    z4 <- function(N) (mu0(N)-mu1(N)-sigma0(N)*qnorm(1-sig.level))/sigma1(N) # one-sided
+      
+      
+      
+      
+    if (alternative == "two.sided"){
+      f <- function(N) (pnorm(z1(N)) - pnorm(z2(N))-beta)^2
+      power.fn <-  function(N) pnorm(z1(N)) - pnorm(z2(N))-beta
+    }else if(alternative == "right.skewed"){
+      f <- function(N)  (z3(N) - qnorm(beta) )^2 
+      power.fn <-  function(N) z3(N) - qnorm(beta)
+    }else if (alternative == "left.skewed"){
+      f <- function(N) (z4(N) - qnorm(1 - beta))^2
+      power.fn <-  function(N) z4(N) - qnorm(1 - beta)
+    }
+    
+    f <- Vectorize(f, "N")
+    power.fn <- Vectorize(power.fn, "N")
+    
     
     }
   
