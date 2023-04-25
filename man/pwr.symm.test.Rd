@@ -47,7 +47,6 @@ Title
 \examples{
 x <- rgamma(30, shape=2, scale=2)
 pwr.symm.test(x, sig.level = 0.05, power = 0.8, method="wilcox")
-
 }
 \references{
 {

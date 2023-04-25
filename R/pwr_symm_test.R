@@ -25,7 +25,6 @@
 #'   \item power - Power of test (1 minus Type II error probability)
 #'   \item method - the type of test applied.
 #'   }
-#' @export
 #' @importFrom MASS boxcox
 #' @importFrom stats qnorm lm var optimize 
 #' 
@@ -35,7 +34,7 @@
 #' @examples
 #' x <- rgamma(30, shape=2, scale=2)
 #' pwr.symm.test(x, sig.level = 0.05, power = 0.8, method="wilcox")
-#' 
+#' @export
 pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
                          alternative = c("two.sided", "right.skewed", "left.skewed"),
                          plot.extraplation = FALSE){
@@ -73,22 +72,19 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     L2 <- est_quant_H1$L2
     theta1 <- est_quant_H1$theta1
     tau1 <- est_quant_H1$tau1
-    # print(data.frame("theta1"=theta1, "tau1"=tau1, "sigma2.x"=sigma2.x))
     
     mu1 <- function(N) N*(N-1)/2*qz + N*qx
     sigma1 <- function(N) {
       Kn <- (1 - 2*qz - qz^2 - 2*L1) * N^3 # +
-        # (5/2*qz^2 +13/2*qz - 2*qz*qx + 2*(1 - qx) + 6*L1 - 2*L2 - 3) * N^2 +
-        # (2*qx*qz -3/2*qz^2 - qx^2 - 9/2*qz + 3*qx - 4*L1 + 2*L2) * N
-      
+        (5/2*qz^2 +13/2*qz - 2*qz*qx + 2*(1 - qx) + 6*L1 - 2*L2 - 3) * N^2 +
+        (2*qx*qz -3/2*qz^2 - qx^2 - 9/2*qz + 3*qx - 4*L1 + 2*L2) * N
+
       sig1.square <- Kn - N*(N-1)*(N-3) * theta1 * tau1 +
         (N-1)*(N-2)*(N-3)*(N-4)*sigma2.x/(4*N)*(theta1)^2
-      # sigma1.value <- ifelse(sig1.square < 0, sigma0(N), sqrt(sig1.square))
       
       if (sig1.square > 0) {
         sigma1.value <- sqrt(sig1.square)
       }else{
-        # print("sig1.square<=0")
         sigma1.value <- sqrt(N*(N+1)*(2*N+1)/24 - N*(N-1)*(N-3) * theta0 * tau0 +
                                (N-1)*(N-2)*(N-3)*(N-4)*sigma2.x/(4*N)*(theta0)^2)
       }
@@ -102,7 +98,7 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     # Normal approximation
     z1 <- function(N) (mu0(N)-mu1(N)+sigma0(N)*z_alpha)/sigma1(N)
     z2 <- function(N) (mu0(N)-mu1(N)-sigma0(N)*z_alpha)/sigma1(N)  
-    z3 <- function(N) (mu0(N)-mu1(N)+sigma0(N)*qnorm(1-sig.level))/sigma1(N) # one-sided
+    z3 <- function(N) (mu0(N)-mu1(N)+sigma0(N)*qnorm(1-sig.level))/sigma1(N) # right-skewed
     z4 <- function(N) (mu0(N)-mu1(N)-sigma0(N)*qnorm(1-sig.level))/sigma1(N) # one-sided
     
     if (alternative == "two.sided"){
@@ -110,7 +106,7 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
       f <- function(N) (pnorm(z1(N)) - pnorm(z2(N))-beta)^2
       power.fn <-  function(N) pnorm(z1(N)) - pnorm(z2(N))-beta
     }else if(alternative == "right.skewed"){
-      f <- function(N)  (z3(N) - qnorm(beta) )^2 # one-sided
+      f <- function(N)  (z3(N) - qnorm(beta) )^2 
       power.fn <-  function(N) z3(N) - qnorm(beta)
     }else if (alternative == "left.skewed"){
       f <- function(N) (z4(N) - qnorm(1 - beta))^2

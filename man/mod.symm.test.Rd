@@ -65,13 +65,13 @@ the observations that smaller than sample mean.For more details, see Gastwitrh (
   Modified Wilcoxon signed-rank test
   data:  post and pre
   W = 238, p-value = 0.767
-  alternative hypothesis: two.side
+  alternative hypothesis: two.sided
   
   Interpretation:
-  This is no clue to reject the hypothesis that the difference of plasma silicon 
-  levels before and after silicone implants surgery is symmetric.
+  There is no clue to reject the hypothesis that the distribution of the difference of 
+  plasma silicon levels before and after silicone implants surgery is symmetric. The implant 
+  surgery make no difference to the plasma silicon level.
   
-  mod.symm.test(x=post, y=pre, alternative ="greater", method = "wilcox")
 
 }
 }
