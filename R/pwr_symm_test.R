@@ -37,7 +37,7 @@
 #' @export
 pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
                          alternative = c("two.sided", "right.skewed", "left.skewed"),
-                         plot.extraplation = FALSE){
+                         plot.extrapolation = FALSE){
   
   if(!is.numeric(x)) stop("'x' must be numeric")
   if(length(x) < 1L)
@@ -200,7 +200,7 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
                data.name = DNAME
   )
   ### extraplation plot ###
-  if (plot.extraplation == TRUE){
+  if (plot.extrapolation == TRUE){
     MC <- 1000
     n.seq <- seq(5, n, by=5)
     p.val <- matrix(NA_real_, nrow = MC, ncol = length(n.seq))
@@ -223,7 +223,7 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     
     ## fit model ##
     mod <- lm(log(p.avg)~n.seq)
-    extrap.n <- 100
+    extrap.n <- 200
     n.seq.extrap <- seq(from=max(n.seq), to=extrap.n)
     y.predict <- predict(mod, data.frame(x=n.seq))
     y.predict.extrap <- exp(mod$coefficients[[1]] + mod$coefficients[[2]]*n.seq.extrap)
@@ -233,8 +233,8 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     lines(n.seq.extrap, y.predict.extrap, col="blue", lty=2)
     abline(h = 0.05, col = "red", lty=2)
     
-    N.extraplation <- ceiling((log(0.05) - mod$coefficients[[1]] )/mod$coefficients[[2]])
-    RVAL <- c(RVAL, list("N.extraplation" = N.extraplation))
+    N.extrapolation <- ceiling((log(0.05) - mod$coefficients[[1]] )/mod$coefficients[[2]])
+    RVAL <- c(RVAL, list("N.extrapolation" = N.extrapolation))
   }
   
   ######################################
