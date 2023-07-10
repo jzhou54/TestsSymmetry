@@ -1,7 +1,8 @@
 # modsymmtest
+
 Modified symmetry test
 
-Provide functionality to test the symmetry characteristic of a data, or paired data sets.
+Provide functionality to test the symmetry characteristic of a dataset, or paired datasets.
 
 To install this package, use the statement below in R:
 
