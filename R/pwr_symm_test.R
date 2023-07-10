@@ -17,6 +17,7 @@
 #'   You can specify just the initial letter.
 #'   "right.skewed": test whether positively skewed, 
 #'   "left.skewed" : test whether negatively skewed.
+#' @param plot.extrapolation a logical variable indicating whether to show the data-driven extrapolation plot and the corresponding sample size estimated. 
 #'   
 #' @returns A list of class "power.htest" containing the following components:
 #'    \itemize{
@@ -37,7 +38,7 @@
 #' @export
 pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
                          alternative = c("two.sided", "right.skewed", "left.skewed"),
-                         plot.extraplation = FALSE){
+                         plot.extrapolation = FALSE){
   
   if(!is.numeric(x)) stop("'x' must be numeric")
   if(length(x) < 1L)
@@ -52,10 +53,6 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
   z_alpha <- qnorm(1-sig.level/2)
   beta = 1 - power
   
-  est_quant_H1 <- get_quant_H1(x)
-  qx <- est_quant_H1$qx
-  qz <- est_quant_H1$qz
-  
   if (method == "wilcox"){
     METHOD <- "Modified Wilcoxon signed-rank test power calculation"
    
@@ -68,21 +65,45 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
                                  (N-1)*(N-2)*(N-3)*(N-4)*sigma2.x/(4*N)*(theta0)^2)
     
     ##### estimates under H1 #####
-    
-    
-    L1 <- est_quant_H1$L1
-    L2 <- est_quant_H1$L2
+    est_quant_H1 <- get_quant_H1(x)
+    p1 <- est_quant_H1$p1
+    p2 <- est_quant_H1$p2
+    p3 <- est_quant_H1$p3
+    p4 <- est_quant_H1$p4
     theta1 <- est_quant_H1$theta1
     tau1 <- est_quant_H1$tau1
     
-    mu1 <- function(N) N*(N-1)/2*qz + N*qx
+    
+    ### exact estimation of qz ######
+    sig <- sd(x)
+    Y <- x - m
+    CO <- function(u) mean(cos(Y*u))
+    COV <- Vectorize(CO)
+    SI <- function(u) mean(sin(Y*u))
+    SIV <- Vectorize(SI)
+    Intg <- function(t) COV(t*(2-n)/n)*SIV(t*(2-n)/n)*exp(-2*t^2*sig^2*(n-2)/n^2)/t
+    
+    r = quantile(Y, c(0.25, 0.75))
+    h = (r[2] - r[1])/ 1.34
+    Tn <- log(n) / (3*1.06 * min(sqrt(var(Y)),h ))
+    qz <- 1/2 - 2/pi*integrate(Intg, 1/Tn, Tn, stop.on.error = FALSE)$value
+    
+    
+    ## mu1 using p2 ##
+    mu1 <- function(N) N*(N-1)/2*p2 + N*p1
+    
+    ## mu1 using qz ##
+    mu1 <- function(N) N*(N-1)/2*qz + N*p1
+    
     sigma1 <- function(N) {
-      Kn <- (1 - 2*qz - qz^2 - 2*L1) * N^3 # +
-        (5/2*qz^2 +13/2*qz - 2*qz*qx + 2*(1 - qx) + 6*L1 - 2*L2 - 3) * N^2 +
-        (2*qx*qz -3/2*qz^2 - qx^2 - 9/2*qz + 3*qx - 4*L1 + 2*L2) * N
-
+      Kn <- N*p1*(1-p1) + N*(N-1)/2*(p2*(1-p2) + 4*(p3-p1*p2)) +
+        N*(N-1)*(N-2)*(p4-p2^2)
+      # Kn <- N*(N+1)*(2*N+1)/24
+      
       sig1.square <- Kn - N*(N-1)*(N-3) * theta1 * tau1 +
         (N-1)*(N-2)*(N-3)*(N-4)*sigma2.x/(4*N)*(theta1)^2
+      # sig1.square <- Kn - N*(N-1)*(N-3) * theta0 * tau0 +
+      #   (N-1)*(N-2)*(N-3)*(N-4)*sigma2.x/(4*N)*(theta0)^2
       
       if (sig1.square > 0) {
         sigma1.value <- sqrt(sig1.square)
@@ -90,10 +111,8 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
         sigma1.value <- sqrt(N*(N+1)*(2*N+1)/24 - N*(N-1)*(N-3) * theta0 * tau0 +
                                (N-1)*(N-2)*(N-3)*(N-4)*sigma2.x/(4*N)*(theta0)^2)
       }
-      
       return(sigma1.value)
     }
-    
     sigma1 <- Vectorize(sigma1, "N")
     
     
@@ -124,7 +143,12 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     f <- Vectorize(f, "N")
     power.fn <- Vectorize(power.fn, "N")
     
-    getN <-  optimize(f, c(n, 600), maximum = F)$minimum
+    if (power.fn(n) >= power ){
+      getN <- n
+    }else{
+      getN <-  optimize(f, c(10, 1000), maximum = F)$minimum
+    }
+    
     getN.int <- ceiling(getN)
     
     # getN.initial <-  getN.int
@@ -200,7 +224,7 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
                data.name = DNAME
   )
   ### extraplation plot ###
-  if (plot.extraplation == TRUE){
+  if (plot.extrapolation == TRUE){
     MC <- 1000
     n.seq <- seq(5, n, by=5)
     p.val <- matrix(NA_real_, nrow = MC, ncol = length(n.seq))
@@ -223,7 +247,7 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     
     ## fit model ##
     mod <- lm(log(p.avg)~n.seq)
-    extrap.n <- 100
+    extrap.n <- 200
     n.seq.extrap <- seq(from=max(n.seq), to=extrap.n)
     y.predict <- predict(mod, data.frame(x=n.seq))
     y.predict.extrap <- exp(mod$coefficients[[1]] + mod$coefficients[[2]]*n.seq.extrap)
@@ -233,8 +257,8 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     lines(n.seq.extrap, y.predict.extrap, col="blue", lty=2)
     abline(h = 0.05, col = "red", lty=2)
     
-    N.extraplation <- ceiling((log(0.05) - mod$coefficients[[1]] )/mod$coefficients[[2]])
-    RVAL <- c(RVAL, list("N.extraplation" = N.extraplation))
+    N.extrapolation <- ceiling((log(0.05) - mod$coefficients[[1]] )/mod$coefficients[[2]])
+    RVAL <- c(RVAL, list("N.extraplation" = N.extrapolation))
   }
   
   ######################################

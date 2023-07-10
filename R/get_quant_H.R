@@ -26,32 +26,48 @@ get_quant_H0 <- function(x)  {
 
 ############### function for getting estimates under H1 ########
 get_quant_H1 <- function(x) {
+  #------------------------------------------------------#
   mean.X <- mean(x)
-  z = Rfit::walsh(x)
-  n = length(x)
+  n <- length(x)
+  y <- x - mean.X
+  ys <- sort(y)
+  y.star <- c(2*ys[1]-ys[2], ys, 2*ys[n] - ys[n-1])
+  # Gy
+  G.y.star <- function(u) {
+    if (u <= y.star[1]) {
+      return(0)
+    } else if (u >= y.star[length(y.star)]) {
+      return(1)
+    } else {
+      interval_index <- findInterval(u, y.star) # find which interval that u belongs to
+      Yi <- y.star[interval_index]; Yii <- y.star[interval_index+1]
+      val <- (interval_index-1) / (n+1) + (u - Yi) / ((n+1)*(Yii - Yi))
+      return(val)
+    }
+  }
+  G.y.star.V <- Vectorize(G.y.star)
+  #------------------------------------------------------#
+  # estimators under H1
+  Gy_y <- G.y.star.V(-y)
+  # p1=Pr(X1>mu)
+  p1 <- 1-G.y.star.V(0)
+  # p2=Pr(X1+X2>2mu)
+  p2 <- mean(1 - Gy_y)
+  # p3=Pr(X1+X2>2mu, X1>mu)
+  p3 <- mean( (1 - Gy_y) * (y > 0))
+  # p4=Pr(X1+X2>2mu, X1+X3>2mu)
+  p4 <- mean( (1 - Gy_y)^2 )
+  #------------------------------------------------------#
   
-  # 1. nonparametric estimate qX = Pr(X> E(X))
-  qx <- mean(x > mean.X)
-  
-  # 2. nonparametric estimate qZ = Pr(Z12> E(Z12))
-  qz <- mean(z > mean.X)
-  # 3. nonparametric estimation of L1
-  
-  Y = x - mean.X
-  Fy = ecdf(Y)
-  L1 <- mean(Fy(Y)*Fy(-Y) - (1 - Fy(-Y))^2)
-  
-  # 4. nonparametric estimate L2
-  L2 <- mean(Fy(-Y) * (Y>0))
-  
-  # 5. nonparametric estimate theta = f_Z(mu)
-  f.Z <- function(u) {density(z, from = u, to = u)$y[1] }
+  # theta
+  f.x <- function(u) density(x, from = u, to=u)$y[1]
+  f.x.vec <- Vectorize(f.x)
+  f.Z <- function (u) 2*mean(f.x.vec(2*u-x))
   theta1 <- f.Z(mean.X)
   
-  # 6. nonparametric estimation of tau
-  P_z = ecdf(z)
-  Zs <- sort(z[z>=mean.X])
-  P_Zs <- P_z(Zs)
-  tau1 <- sum(diff(Zs) * 0.5*( 2 - P_Zs[2:length(P_Zs)] - P_Zs[1:(length(P_Zs)-1)]))
-  return(list("qx"=qx, "qz"=qz, "L1"=L1, "L2"=L2, "theta1"=theta1, "tau1"=tau1))
+  # tau
+  FX <- ecdf(x)
+  tau1 <- -mean(x*FX(2*mean.X-x)) + mean.X*mean(FX(2*mean.X-x)) # based on ecdf
+  
+  return(list("p1"=p1, "p2"=p2, "p3"=p3, "p4"=p4, "theta1"=theta1, "tau1"=tau1))
 }
