@@ -4,12 +4,11 @@
 #' Determine the sample size required for one-sample wilcoxon signed-rank test or sign test 
 #' with unknown center of symmetry estimated by sample mean.
 #' 
-#' @details 
 #' 
 #' 
 #' @param x pilot data, numeric vector of data values. Non-finite (e.g., infinite or missing) values will be omitted.
-#' @param sig.level Significance level (Type I error probability)
-#' @param power Power of test (1 minus Type II error probability)
+#' @param sig.level significance level (Type I error probability)
+#' @param power power of test (1 minus Type II error probability)
 #' @param method a character string specifying which symmetry test to be used, "wilcox" refers to Wilcoxon signed-rank test,
 #'   and "sign" is sign test.
 #' @param alternative
@@ -21,9 +20,9 @@
 #'   
 #' @returns A list of class "power.htest" containing the following components:
 #'    \itemize{
-#'   \item n - sample size 
-#'   \item sig.level - Significance level (Type I error probability)
-#'   \item power - Power of test (1 minus Type II error probability)
+#'   \item N - sample size estimated
+#'   \item sig.level - significance level (Type I error probability)
+#'   \item power - power of test (1 minus Type II error probability)
 #'   \item method - the type of test applied.
 #'   }
 #' @importFrom MASS boxcox
@@ -35,6 +34,9 @@
 #' @examples
 #' x <- rgamma(30, shape=2, scale=2)
 #' pwr.symm.test(x, sig.level = 0.05, power = 0.8, method="wilcox")
+#' 
+#' y <- rexp(35, rate=3)
+#' pwr.symm.test(y, plot.extrapolation = T)
 #' @export
 pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
                          alternative = c("two.sided", "right.skewed", "left.skewed"),
@@ -226,7 +228,7 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
   ### extraplation plot ###
   if (plot.extrapolation == TRUE){
     MC <- 1000
-    n.seq <- seq(5, n, by=5)
+    n.seq <- seq(10, n, by=5)
     p.val <- matrix(NA_real_, nrow = MC, ncol = length(n.seq))
     colnames(p.val) <- paste0("n",n.seq)
     
@@ -252,13 +254,14 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     y.predict <- predict(mod, data.frame(x=n.seq))
     y.predict.extrap <- exp(mod$coefficients[[1]] + mod$coefficients[[2]]*n.seq.extrap)
     
-    plot(n.seq, p.avg, pch=16, ylim=c(0,1), xlim=c(5, extrap.n))
+    plot(n.seq, p.avg, pch=16, ylim=c(0,1), xlim=c(5, extrap.n), xlab="n")
     lines(n.seq, exp(y.predict), col='blue')
     lines(n.seq.extrap, y.predict.extrap, col="blue", lty=2)
     abline(h = 0.05, col = "red", lty=2)
     
     N.extrapolation <- ceiling((log(0.05) - mod$coefficients[[1]] )/mod$coefficients[[2]])
-    RVAL <- c(RVAL, list("N.extraplation" = N.extrapolation))
+
+    RVAL <- c(RVAL, list("N.extrapolation" = N.extrapolation))
   }
   
   ######################################

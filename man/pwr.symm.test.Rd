@@ -10,15 +10,15 @@ pwr.symm.test(
   power = 0.8,
   method = "wilcox",
   alternative = c("two.sided", "right.skewed", "left.skewed"),
-  plot.extraplation = FALSE
+  plot.extrapolation = FALSE
 )
 }
 \arguments{
 \item{x}{pilot data, numeric vector of data values. Non-finite (e.g., infinite or missing) values will be omitted.}
 
-\item{sig.level}{Significance level (Type I error probability)}
+\item{sig.level}{significance level (Type I error probability)}
 
-\item{power}{Power of test (1 minus Type II error probability)}
+\item{power}{power of test (1 minus Type II error probability)}
 
 \item{method}{a character string specifying which symmetry test to be used, "wilcox" refers to Wilcoxon signed-rank test,
 and "sign" is sign test.}
@@ -27,13 +27,15 @@ and "sign" is sign test.}
 You can specify just the initial letter.
 "right.skewed": test whether positively skewed, 
 "left.skewed" : test whether negatively skewed.}
+
+\item{plot.extrapolation}{a logical variable indicating whether to show the data-driven extrapolation plot and the corresponding sample size estimated.}
 }
 \value{
 A list of class "power.htest" containing the following components:
    \itemize{
-  \item n - sample size 
-  \item sig.level - Significance level (Type I error probability)
-  \item power - Power of test (1 minus Type II error probability)
+  \item N - sample size estimated
+  \item sig.level - significance level (Type I error probability)
+  \item power - power of test (1 minus Type II error probability)
   \item method - the type of test applied.
   }
 }
@@ -47,6 +49,9 @@ Title
 \examples{
 x <- rgamma(30, shape=2, scale=2)
 pwr.symm.test(x, sig.level = 0.05, power = 0.8, method="wilcox")
+
+y <- rexp(35, rate=3)
+pwr.symm.test(y, plot.extrapolation = T)
 }
 \references{
 {
