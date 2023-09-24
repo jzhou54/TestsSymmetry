@@ -4,8 +4,6 @@
 #' Determine the sample size required for one-sample wilcoxon signed-rank test or sign test 
 #' with unknown center of symmetry estimated by sample mean.
 #' 
-#' 
-#' 
 #' @param x pilot data, numeric vector of data values. Non-finite (e.g., infinite or missing) values will be omitted.
 #' @param sig.level significance level (Type I error probability)
 #' @param power power of test (1 minus Type II error probability)
@@ -92,7 +90,7 @@ pwr.symm.test<- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     
     
     ## mu1 using p2 ##
-    mu1 <- function(N) N*(N-1)/2*p2 + N*p1
+    #mu1 <- function(N) N*(N-1)/2*p2 + N*p1
     
     ## mu1 using qz ##
     mu1 <- function(N) N*(N-1)/2*qz + N*p1

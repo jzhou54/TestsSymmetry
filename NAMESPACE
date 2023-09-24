@@ -2,9 +2,12 @@
 
 export(getV)
 export(mod.symm.test)
+export(n.symm.test)
 export(pwr.symm.test)
 importFrom(MASS,boxcox)
 importFrom(Rcpp,evalCpp)
+importFrom(e1071,kurtosis)
+importFrom(e1071,skewness)
 importFrom(stats,complete.cases)
 importFrom(stats,lm)
 importFrom(stats,optimize)

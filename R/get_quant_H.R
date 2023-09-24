@@ -8,7 +8,7 @@ get_quant_H0 <- function(x)  {
   ## Tn selection
   r <- quantile(x, c(0.25, 0.75))
   h <- (r[2] - r[1])/1.34
-  Tn<-log(n)/( 3 * 1.06 * min(sqrt(var(x)), h))
+  Tn <- log(n)/( 3 * 1.06 * min(sqrt(var(x)), h))
   
   ## Estimation of theta
   S <- function(u) sum( sin(2*pi*(xc[xc!=u]-u)*Tn)/(2*pi*(xc[xc!=u]-u)))+
