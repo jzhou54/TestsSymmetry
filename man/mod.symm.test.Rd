@@ -70,15 +70,13 @@ the observations that smaller than sample mean.For more details, see Gastwitrh (
   Interpretation:
   There is no clue to reject the hypothesis that the distribution of the difference of 
   plasma silicon levels before and after silicone implants surgery is symmetric. 
-  
-
 }
 }
 \references{
 {
-Vexler, A., Gao, X., & Zhou, J. (2023). How to implement signed-rank wilcox. test () type procedures when a center of symmetry is unknown. Computational Statistics & Data Analysis, 107746. 
+Vexler, A., Gao, X., & Zhou, J. (2023). How to implement signed-rank `wilcox.test()` type procedures when a center of symmetry is unknown. Computational Statistics & Data Analysis, 107746. 
 
-Gastwirth, J. L. (1971). On the sign test for symmetry. Journal of the American Statistical Association, 66(336), 821-823.
+Gastwirth, J. L. (1971). On the Sign Test for Symmetry. Journal of the American Statistical Association, 66(336), 821-823.
 }
 }
 \author{

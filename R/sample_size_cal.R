@@ -1,31 +1,66 @@
-#' Title
-#' @title Sample size determination for a nonparametric tests of symmetry
-#' @description Determine the sample size required for one-sample wilcoxon signed-rank test or sign test 
-#' with unknown center of symmetry estimated by sample mean.
-#' @param x pilot data, numeric vector of data values.
-#' @param sig.level significance level (Type I error probability)
-#' @param power power of test (1 minus Type II error probability)
+#' @title Sample size determination for nonparametric tests of symmetry
+#' @description Determine the sample size required for one-sample Wilcoxon signed-rank test or Sign test 
+#' with an unknown symmetry center estimated by sample mean given a target power.
+#' 
+#' @param x pilot data, numeric vector of data values
+#' @param sig.level significance level (Type I error probability), the default value is 0.05
+#' @param power power of test (1 minus Type II error probability), the default value is 0.8
 #' @param method a character string specifying which symmetry test to be used, "wilcox" refers to Wilcoxon signed-rank test,
-#'   and "sign" is sign test.
+#'   and "sign" sign test
 #' @param alternative 
-#'  a character string specifying the alternative hypothesis, must be one of "two sided" (default), "right.skewed", or "left.skewed".
-#'   You can specify just the initial letter.
+#'  a character string specifying the alternative hypothesis, must be one of "two.sided" (default), "right.skewed", or "left.skewed".
+#'  Can be abbreviated.
+#'  
+#'   "two.sided" : test whether skewed,
+#'  
 #'   "right.skewed": test whether positively skewed, 
-#'   "left.skewed" : test whether negatively skewed.
+#'   
+#'   "left.skewed" : test whether negatively skewed
 #' 
 #' @importFrom e1071 skewness kurtosis 
-#'
+#' @details A Normal approximation to the power requires specification of some unknown quantities in the nonparametric context. 
+#' In this regard, empirical smoothed CDF and Bootstrap methods were leveraged to estimate these quantities using pilot data `x`.  
+#' 
+#' Remark: If the pilot data has an estimated power that is higher than the target power, a warning message will be shown.
+#' The output N would be the estimated sample size given the target power.  
+#' 
 #' @returns A list of class "power.htest" containing the following components:
 #'    \itemize{
 #'   \item N - sample size estimated
 #'   \item sig.level - significance level (Type I error probability)
 #'   \item power - power of test (1 minus Type II error probability)
-#'   \item method - the type of test applied
+#'   \item method - the test method applied
 #'   \item alternative - one- or two-sided test. Can be abbreviated
 #'   }
-#' @export
+#' @references{ 
+#' Chakraborti, S., Hong, B., & van de Wiel, M. A. (2006). A Note on Sample Size Determination for a Nonparametric Test of Location. Technometrics, 48(1), 88-94.
+#' 
+#' Vexler, A., Gao, X., & Zhou, J. (2023). How to implement signed-rank `wilcox.test()` type procedures when a center of symmetry is unknown. Computational Statistics & Data Analysis, 107746. 
+#' 
+#' Gastwirth, J. L. (1971). On the Sign Test for Symmetry. Journal of the American Statistical Association, 66(336), 821-823.
+#'
+#' }
 #'
 #' @examples
+#' \dontrun{
+#' set.seed(20231004)
+#' x <- rnorm(30) + rexp(30, rate = 1)
+#' n.symm.test(x, sig.level = 0.05, power = 0.8, method = "wilcox", alternative ="two.sided" )
+#' 
+#' Result:
+#'  Sample size calculation under wilcox procedure 
+#' 
+#'           N = 234
+#'   sig.level = 0.05
+#'       power = 0.8
+#'        type = wilcox
+#' alternative = two.sided
+#' 
+#'  Interpretation: 
+#'  Given the pilot sample `x`, significance level 0.05 and target power 0.8, the estimated
+#'  sample size is 234 under Wilconon test procedure.
+#' }
+#' @export
 n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
                         alternative = c("two.sided", "right.skewed", "left.skewed")
                         ){
@@ -156,7 +191,7 @@ n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
                N = n.out,
                sig.level = sig.level,
                power = power,
-               type = method,
+               method = method,
                alternative = alternative
   )
   
