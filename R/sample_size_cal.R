@@ -66,10 +66,11 @@ n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
                         ){
  
   logit.rev <- function(u) exp(u) / (1+exp(u))
-  B <- 1000
+  B <- 3000
   upper.cutoff <- 10000
   sigma2.x <- var(x)
   n <- length(x)
+  m <- mean(x)
   z_alpha <- qnorm(1-sig.level/2)
   alternative <- match.arg(alternative)
   
@@ -155,22 +156,7 @@ n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     power.fn <- Vectorize(power.fn, "N")
     
     pow.piliot <- power.fn(n)
-    
-    # if (pow.piliot >= power) {
-    #   print("Power evaluated at the pilot sample size exceeds the target power.")
-    #   n.out = n
-    #   warning("The power of the given pilot sample exceeds the target power!")
-    #   
-    # }else{
-    #   n.out <- 10
-    #   while (n.out < upper.cutoff & power.fn(n.out) < power){
-    #     n.out <- n.out + 1
-    #     if (n.out >= upper.cutoff) {
-    #       n.out = upper.cutoff
-    #       break
-    #     }
-    #   }
-    # }
+
     
     if (pow.piliot >= power){
       warning("The power of the given pilot sample exceeds the target power!") }
@@ -184,7 +170,70 @@ n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
       }
     }
     
+  }else if (method == "sign") {
+    METHOD <- "Sample size calculation under sign test procedure"
+    
+    Sb <- array()
+    for (b in 1:B) {
+      xb <- sample(x, size = n, replace = T)
+      mb <- mean(xb)
+      Sb[b] <- sum(xb < mb) #  test statistic of sign test
+    }
+    
+    pxB <- Sb / n # estimation of px, E(S*) = n*px
+    pxBS <- sort(pxB)
+    
+    
+    ## quantity under H0 ##
+    quant_H0 <- get_quant_H0(x)
+    w0 <- quant_H0$w
+    CE0 <- quant_H0$CE
+    mu0 <-  function(N) N / 2
+    sigma0 <- function(N) sqrt((1 / 4 + var(x) * w0 ^ 2 + 2 * w0 * CE0) * N)
+    
+    ## quantities under H1 ##
+    quant_H1 <- get_quant_H1(x)
+    w1 <- quant_H1$w
+    CE1 <- quant_H1$CE
+    
+    new_data <- data.frame(n_pilot = n, 
+                           sd=sd(x),
+                           abs_sk = abs(skewness(x)), 
+                           kur = kurtosis(x)
+    )
+    
+    pred <- as.numeric(predict(tree_model_sign, newdata = new_data, method = "anova"))
+    alp <- logit.rev(pred)
+    
+    px <- pxBS[alp * B]
+    mu1 <-  function(N) N * px
+    sigma1 <- function(N) sqrt(((1 - px) * px + var(x) * w1 ^ 2 + 2 * w1 * CE1) * N)
+    
+    
+    z1 <- function(N) (mu0(N) - mu1(N) + sigma0(N) * z_alpha) / sigma1(N)
+    z2 <- function(N) (mu0(N) - mu1(N) - sigma0(N) * z_alpha) / sigma1(N)
+    power.fn <-  function(N) pnorm(z2(N)) - pnorm(z1(N)) + 1
+    power.fn <- Vectorize(power.fn, "N")
+    pow.piliot <- power.fn(n)
+    
+    if (pow.piliot >= power) {
+      warning("The power of the given pilot sample exceeds the target power!") }
+    
+    n.out <- 10
+    while (n.out < upper.cutoff & power.fn(n.out) < power) {
+      n.out <- n.out + 1
+      if (n.out >= upper.cutoff) {
+        n.out = upper.cutoff
+        break
+      }
+    }
+
+   
+    
+    
+    
   }
+  
   
   ## return list of 'power.htest' class
   RVAL <- list(method = METHOD,

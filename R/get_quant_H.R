@@ -20,16 +20,27 @@ get_quant_H0 <- function(x)  {
   xs <- sort(xc)  # V(i)
   S1 <- seq(from=1, to=n, by=1) # i
   hat_tau <- sum(xs*S1)/n^2
-  return(list(tau0 = hat_tau,
-              theta0 = hat_theta) )
+  
+  ## quantity for sign test ##
+  a <- 1 * (x > m - n ^ (-1 / 5)) * (x < m + n ^ (-1 / 5))
+  D <- sum(a)
+  A <- max(c(1, D))
+  VHW <- (n ^ (3 / 10) / A) ^ 2
+  hat_w <- sqrt(1 / (4 * n * VHW))
+  CE <- mean(x * (x < m)) - m / 2
+  
+  return(list("tau0" = hat_tau,
+              "theta0" = hat_theta,
+              "w" = hat_w, 
+              "CE" = CE) )
 }
 
 ############### function for getting estimates under H1 ########
 get_quant_H1 <- function(x) {
   #------------------------------------------------------#
-  mean.X <- mean(x)
+  m <- mean(x)
   n <- length(x)
-  y <- x - mean.X
+  y <- x - m
   ys <- sort(y)
   y.star <- c(2*ys[1]-ys[2], ys, 2*ys[n] - ys[n-1])
   # Gy
@@ -63,11 +74,17 @@ get_quant_H1 <- function(x) {
   f.x <- function(u) density(x, from = u, to=u)$y[1]
   f.x.vec <- Vectorize(f.x)
   f.Z <- function (u) 2*mean(f.x.vec(2*u-x))
-  theta1 <- f.Z(mean.X)
+  theta1 <- f.Z(m)
   
   # tau
   FX <- ecdf(x)
-  tau1 <- -mean(x*FX(2*mean.X-x)) + mean.X*mean(FX(2*mean.X-x)) # based on ecdf
+  tau1 <- -mean(x*FX(2*m-x)) + m*mean(FX(2*m-x)) # based on ecdf
   
-  return(list("p1"=p1, "p2"=p2, "p3"=p3, "p4"=p4, "theta1"=theta1, "tau1"=tau1))
+  
+  ## quantity for sign test ##
+  hat_w <- f.x.vec(m)
+  CE <- mean((x - m) * (x < m))
+  
+  return(list("p1"=p1, "p2"=p2, "p3"=p3, "p4"=p4, "theta1"=theta1, "tau1"=tau1, "w"= hat_w, "CE" = CE))
 }
+
