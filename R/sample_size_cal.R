@@ -60,8 +60,8 @@
 #' alternative = two.sided
 #' 
 #'  Interpretation: 
-#'  Given the pilot sample `diff` and significance level 0.05. The sample size needed is 83 to reach the 
-#'  target power 0.5 under wilcoxon test procedure.
+#'  Given the pilot sample `diff` and the significance level 0.05. The sample size of the data that is expected to 
+#'  provide the target power 0.5 of the Wilcoxon test procedure is computed as 83.
 #' }
 #' @export
 n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
@@ -70,7 +70,7 @@ n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
  
   logit.rev <- function(u) exp(u) / (1+exp(u))
   B <- 3000
-  upper.cutoff <- 10000
+  upper.cutoff <- 3000
   sigma2.x <- var(x)
   n <- length(x)
   m <- mean(x)
@@ -78,7 +78,7 @@ n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
   alternative <- match.arg(alternative)
   
   if (method == "wilcox"){
-    METHOD <- "Sample size calculation under ilcoxon procedure"
+    METHOD <- "Sample size calculation under Wilcoxon procedure"
     # quantities under H0
     est_quant_H0 <- get_quant_H0(x)
     theta0 <- est_quant_H0$theta0
@@ -191,6 +191,7 @@ n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     quant_H0 <- get_quant_H0(x)
     w0 <- quant_H0$w
     CE0 <- quant_H0$CE
+    
     mu0 <-  function(N) N / 2
     sigma0 <- function(N) sqrt((1 / 4 + var(x) * w0 ^ 2 + 2 * w0 * CE0) * N)
     
@@ -198,13 +199,11 @@ n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     quant_H1 <- get_quant_H1(x)
     w1 <- quant_H1$w
     CE1 <- quant_H1$CE
-    
-    data("tree_mode_sign", package = "modsymmtest")
-    new_data <- data.frame(n_pilot = n, 
+  
+    new_data <- data.frame(n.pilot = n, 
                            sd=sd(x),
                            abs_sk = abs(skewness(x)), 
-                           kur = kurtosis(x)
-    )
+                           kur = kurtosis(x))
     
     pred <- as.numeric(predict(tree_model_sign, newdata = new_data, method = "anova"))
     alp <- logit.rev(pred)
@@ -231,10 +230,6 @@ n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
         break
       }
     }
-
-   
-    
-    
     
   }
   

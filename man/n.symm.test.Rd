@@ -72,8 +72,8 @@ Result:
 alternative = two.sided
 
  Interpretation: 
- Given the pilot sample `diff` and significance level 0.05. The sample size needed is 83 to reach the 
- target power 0.5 under wilcoxon test procedure.
+ Given the pilot sample `diff` and the significance level 0.05. The sample size of the data that is expected to 
+ provide the target power 0.5 of the Wilcoxon test procedure is computed as 83.
 }
 }
 \references{
