@@ -2,7 +2,7 @@
 % Please edit documentation in R/sample_size_cal.R
 \name{n.symm.test}
 \alias{n.symm.test}
-\title{Sample size determination for nonparametric tests of symmetry}
+\title{Sample size determination for nonparametric tests of symmetry when the center is unknown}
 \usage{
 n.symm.test(
   x,
@@ -13,7 +13,7 @@ n.symm.test(
 )
 }
 \arguments{
-\item{x}{pilot data, numeric vector of data values}
+\item{x}{learning sample data, numeric vector of data values}
 
 \item{sig.level}{significance level (Type I error probability), the default value is 0.05}
 
@@ -43,42 +43,43 @@ A list of class "power.htest" containing the following components:
 }
 \description{
 Determine the sample size required for one-sample Wilcoxon signed-rank test or Sign test 
-with an unknown symmetry center estimated by sample mean given a target power.
+with an unknown symmetry center estimated by sample mean given a target power.The function uses learning sample 
+in order to predict (calculate) sample size needed to reach a preassumed power based on the underlying data that
+is exemplified by the learning sample.
 }
 \details{
 A Normal approximation to the power requires specification of some unknown quantities in the nonparametric context. 
-In this regard, empirical smoothed CDF and Bootstrap methods were leveraged to estimate these quantities using pilot data `x`.  
+In this regard, empirical smoothed CDF and Bootstrap methods were leveraged to estimate these quantities using learning sample `x`.  
 
-Remark: If the pilot data has an estimated power that is higher than the target power, a warning message will be shown.
-The output N would be the estimated sample size given the target power.
+Remark: If the test provides a power, say, P, based on the learning data and P is higher than the target power, a warning
+message will be shown. However, a needed sample size N to reach the target power will be conducted.
 }
 \examples{
 \dontrun{
-set.seed(20231004)
-x <- rnorm(30) + rexp(30, rate = 1)
-n.symm.test(x, sig.level = 0.05, power = 0.8, method = "wilcox", alternative ="two.sided" )
+ data("plasma.silicon")
+ post <- plasma.silicon$postoperative 
+ pre <- plasma.silicon$preoperative
+ diff <- post - pre
+ n.symm.test(diff, sig.level = 0.05, power = 0.5, method = "wilcox", alternative ="two.sided" )
 
 Result:
  Sample size calculation under wilcox procedure 
 
-          N = 234
+          N = 83
   sig.level = 0.05
-      power = 0.8
+      power = 0.5
        type = wilcox
 alternative = two.sided
 
  Interpretation: 
- Given the pilot sample `x`, significance level 0.05 and target power 0.8, the estimated
- sample size is 234 under Wilconon test procedure.
+ Given the pilot sample `diff` and significance level 0.05. The sample size needed is 83 to reach the 
+ target power 0.5 under wilcoxon test procedure.
 }
 }
 \references{
-{ 
 Chakraborti, S., Hong, B., & van de Wiel, M. A. (2006). A Note on Sample Size Determination for a Nonparametric Test of Location. Technometrics, 48(1), 88-94.
 
 Vexler, A., Gao, X., & Zhou, J. (2023). How to implement signed-rank `wilcox.test()` type procedures when a center of symmetry is unknown. Computational Statistics & Data Analysis, 107746. 
 
 Gastwirth, J. L. (1971). On the Sign Test for Symmetry. Journal of the American Statistical Association, 66(336), 821-823.
-
-}
 }
