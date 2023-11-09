@@ -11,10 +11,13 @@ Maintainer: Jiaojiao Zhou <woerge99@gmail.com>
 Description: Provides functionality of testing whether a dataset comes from a symmetric distribution when the center of symmetry is unknown, including modified wilcoxon test and modified sign test. In addition, sample size determination for both tests is provided. 
 License: GPL-3
 Encoding: UTF-8
-Imports: 
-   Rcpp, MASS, e1071
+Imports: Rcpp, MASS, e1071
 LinkingTo: Rcpp
 RoxygenNote: 7.2.2.9000
-Depends: 
-    R (>= 3.5.0)
+Depends: R (>= 3.5.0)
 LazyData: true
+NeedsCompilation: yes
+Packaged: 2023-11-02 22:03:34 UTC; jzhou54
+Author: Jiaojiao Zhou [aut, cre],
+  Xinyu Gao [aut],
+  Albert Vexler [aut]

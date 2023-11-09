@@ -78,7 +78,7 @@ n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
   alternative <- match.arg(alternative)
   
   if (method == "wilcox"){
-    METHOD <- "Sample size calculation under ilcoxon procedure"
+    METHOD <- "Sample size calculation under wilcox procedure"
     # quantities under H0
     est_quant_H0 <- get_quant_H0(x)
     theta0 <- est_quant_H0$theta0

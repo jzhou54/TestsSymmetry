@@ -1,0 +1,12 @@
+getV                    Getting asymptotic variance of modified wilcox
+                        test statistic
+get_quant_H0            Title
+mod.symm.test           Wilcoxon and Sign tests for symmetry about an
+                        unknown center
+model                   Tree_model
+modsymmtest-package     The modified Wilcoxon and Sign tests for
+                        symmetry about an unknown center
+n.symm.test             Sample size determination for nonparametric
+                        tests of symmetry when the center is unknown
+plasma.silicon          Dataset: plasma.silicon
+tree_model_sign         Tree_model_sign

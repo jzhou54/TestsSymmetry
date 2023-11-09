@@ -114,7 +114,7 @@ mod.symm.test <- function(x, y=NULL,
   
   
   if (method == "wilcox"){
-    METHOD <- "Modified Wilcoxon signed-rank test for symmetry"
+    METHOD <- "Modified Wilcoxon signed-rank test"
     
     ## Test statistic
     # STATISTIC <- setNames(as.numeric(wilcox.test(x,mu=m)$statistic), "W")
@@ -138,7 +138,7 @@ mod.symm.test <- function(x, y=NULL,
     )
     
   } else if (method == "sign") {
-    METHOD <- "Modified sign test for symmetry"
+    METHOD <- "Modified sign test"
     
     ## Test statistic
     STATISTIC <- setNames(sum(1*(x<m)), "S")
@@ -155,7 +155,7 @@ mod.symm.test <- function(x, y=NULL,
     CE <- mean(x*(x<m)) - m/2
     
     ## Asymptotic variance
-    V <- 1/4 + var(x)*(hat_w)^2 + 2 * hat_w * CE
+    V <- 1/4 + var(x)*(hat_w)^2 + 2 *hat_w*CE
     
     pval <- switch (alternative,
                     "two.sided" =  2 * ( 1 - pnorm(abs(STATISTIC-E)/sqrt(n*V))),
