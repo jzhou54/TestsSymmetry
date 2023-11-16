@@ -48,7 +48,7 @@
 #'  
 #' @importFrom stats pnorm wilcox.test var setNames complete.cases
 #' @importFrom Rcpp evalCpp 
-#' @useDynLib modsymmtest
+#' @useDynLib TestsSymmetry
 #' @examples 
 #' \dontrun{
 #'   # A study measures the plasma silicon levels before and after silicone implants surgery
