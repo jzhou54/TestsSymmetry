@@ -152,7 +152,7 @@ mod.symm.test <- function(x, y=NULL,
     E <- n/2
     
     ## probability weight moment for x
-    CE <- mean(x*(x<m)) - m/2
+    CE <- mean((x-m)*(x<m))
     
     ## Asymptotic variance
     V <- 1/4 + var(x)*(hat_w)^2 + 2 * hat_w * CE

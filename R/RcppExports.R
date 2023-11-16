@@ -8,6 +8,6 @@
 #' @param y_ Another data set, default is NULL
 #' @export
 getV <- function(x_, y_ = NULL) {
-    .Call('_modsymmtest_getV', PACKAGE = 'modsymmtest', x_, y_)
+    .Call('_TestsSymmetry_getV', PACKAGE = 'TestsSymmetry', x_, y_)
 }
 

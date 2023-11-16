@@ -1,14 +1,14 @@
-Package: modsymmtest
+Package: TestsSymmetry
 Type: Package
-Title: Modified Symmetry Test
+Title: Tests for symmetry when the center of symmetry is unknown
 Version: 1.0.0
-Date: 2023-11-1
+Date: 2023-11-16
 Authors@R: c(
   person("Jiaojiao", "Zhou", email = "woerge99@gmail.com", role = c("aut", "cre")),
   person("Xinyu", "Gao", email = "xinyugao@buffalo.edu", role = "aut"),
   person("Albert", "Vexler", email = "avexler@buffalo.edu", role = "aut") )
 Maintainer: Jiaojiao Zhou <woerge99@gmail.com>
-Description: Provides functionality of testing whether a dataset comes from a symmetric distribution when the center of symmetry is unknown, including modified wilcoxon test and modified sign test. In addition, sample size determination for both tests is provided. 
+Description: Provides functionality of implementation of statistical testing whether a dataset comes from a symmetric distribution when the center of symmetry is unknown, including wilcoxon test and sign test procedure. In addition, sample size determination for both tests is provided. 
 License: GPL-3
 Encoding: UTF-8
 Imports: 

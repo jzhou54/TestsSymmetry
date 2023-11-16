@@ -3,6 +3,7 @@
 #' @param x pilot sample
 #' 
 #' @importFrom stats quantile density ecdf qnorm sd predict
+#' 
 get_quant_H0 <- function(x)  {
   n <- as.double(length(x))
   m <- mean(x)
@@ -31,7 +32,7 @@ get_quant_H0 <- function(x)  {
   A <- max(c(1, D))
   VHW <- (n ^ (3 / 10) / A) ^ 2
   hat_w <- sqrt(1 / (4 * n * VHW))
-  CE <- mean(x * (x < m)) - m / 2
+  CE <- mean((x - m) * (x < m))
   
   return(list("tau0" = hat_tau,
               "theta0" = hat_theta,
@@ -84,11 +85,13 @@ get_quant_H1 <- function(x) {
   FX <- ecdf(x)
   tau1 <- -mean(x*FX(2*m-x)) + m*mean(FX(2*m-x)) # based on ecdf
   
+  # px
+  px <- 1-p1
   
   ## quantity for sign test ##
   hat_w <- f.x.vec(m)
-  CE <- mean((x - m) * (x < m))
+  CE <- mean(x * (x < m)) - m*px
   
-  return(list("p1"=p1, "p2"=p2, "p3"=p3, "p4"=p4, "theta1"=theta1, "tau1"=tau1, "w"= hat_w, "CE" = CE))
+  return(list("p1"=p1, "p2"=p2, "p3"=p3, "p4"=p4, "theta1"=theta1, "tau1"=tau1, "w"= hat_w, "CE" = CE , "px" = px))
 }
 
