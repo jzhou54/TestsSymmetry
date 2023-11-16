@@ -1,15 +1,15 @@
-# modsymmtest
+# TestsSymmetry
 
-Modified symmetry test
+Tests for symmetry when the center of symmetry is unknown
 
-Provide functionality to test the symmetry characteristic of a dataset, or paired datasets.
+Provides functionality of implementation of statistical testing whether a dataset comes from a symmetric distribution when the center of symmetry is unknown, including wilcoxon test and sign test procedure. In addition, sample size determination for both tests is provided. 
 
 To install this package, use the statement below in R:
 
  ```r
- devtools::install_github("jzhou54/modsymmtest")
+ devtools::install_github("jzhou54/TestsSymmetry")
  
- library(modsymmtest)
+ library(TestsSymmetry)
  ```
  
  The function is 
