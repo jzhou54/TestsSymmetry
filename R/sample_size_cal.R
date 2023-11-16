@@ -211,7 +211,8 @@ n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     px <- pxBS[alp * B]
     mu1 <-  function(N) N * px
     sigma1 <- function(N) sqrt(((1 - px) * px + var(x) * w1 ^ 2 + 2 * w1 * CE1) * N)
-    
+    if (1 / 4 + var(x) * w0 ^ 2 + 2 * w0 * CE0 < 0)  {
+      sigma0 <- function(N)  sqrt(((1 - px) * px + var(x)*w1^2 + 2*w1*CE1) * N)}
     
     z1 <- function(N) (mu0(N) - mu1(N) + sigma0(N) * z_alpha) / sigma1(N)
     z2 <- function(N) (mu0(N) - mu1(N) - sigma0(N) * z_alpha) / sigma1(N)
