@@ -2,9 +2,8 @@
 #' Wilcoxon and Sign tests for symmetry about an unknown center
 #'
 #' @description
-#' R built-in function `wilcox.test()` is designed to perform both the one- and two-sample Wilcoxon test for symmetry 
-#' under the assumption that the center of symmetry is specified. The procedure `mod.symm.test()` extends the capabilities of 
-#' `wilcox.test()` for situations where the center of symmetry is unknown. Such cases can be found in e.g., regression residuals evaluations, 
+#' R built-in function `wilcox.test()` is designed to perform both the one- and two-sample Wilcoxon test when the center of symmetry is specified. The procedure `mod.symm.test()` extends the capabilities of 
+#' `wilcox.test()` for situations where the center of symmetry is unknown. Such cases can be found in, e.g., regression residuals evaluations, 
 #' as well as in the book `Nonparametric statistical methods using R` by Kloke and McKean, and in the scholarly work of Gastwirth.
 #'
 #'
