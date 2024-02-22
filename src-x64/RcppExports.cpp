@@ -12,7 +12,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // getV
 double getV(NumericVector x_, Nullable<NumericVector> y_);
-RcppExport SEXP _modsymmtest_getV(SEXP x_SEXP, SEXP y_SEXP) {
+RcppExport SEXP _TestsSymmetry_getV(SEXP x_SEXP, SEXP y_SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,11 +24,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_modsymmtest_getV", (DL_FUNC) &_modsymmtest_getV, 2},
+    {"_TestsSymmetry_getV", (DL_FUNC) &_TestsSymmetry_getV, 2},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_modsymmtest(DllInfo *dll) {
+RcppExport void R_init_TestsSymmetry(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
