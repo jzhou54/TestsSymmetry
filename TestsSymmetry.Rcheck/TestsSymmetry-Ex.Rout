@@ -145,7 +145,7 @@ alternative hypothesis: two.sided
 > cleanEx()
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  0.55 0.04 0.6 NA NA 
+Time elapsed:  0.46 0.02 0.5 NA NA 
 > grDevices::dev.off()
 null device 
           1 

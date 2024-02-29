@@ -201,16 +201,28 @@ n.symm.test <- function(x, sig.level = 0.05, power = 0.8, method="wilcox",
     quant_H1 <- get_quant_H1(x)
     w1 <- quant_H1$w
     CE1 <- quant_H1$CE
+    px.SECDF <- quant_H1$px
   
     new_data <- data.frame(n.pilot = n, 
+                           distance_px_half=abs(px.SECDF-0.5),
                            sd=sd(x),
                            abs_sk = abs(skewness(x)), 
-                           kur = kurtosis(x))
+                           abs_kur = abs(kurtosis(x)))
     
     pred <- as.numeric(predict(tree_model_sign, newdata = new_data, method = "anova"))
     alp <- logit.rev(pred)
     
-    px <- pxBS[alp * B]
+    aa <- pxBS[round((1-alp/2)*B)]
+    bb <- pxBS[round((1/2)*B)]
+    cc <- pxBS[round((alp/2)*B)]
+    
+    Com1 <- c(aa,bb,cc)
+    Com2 <- c(abs(aa-0.5),abs(bb-0.5),abs(cc-0.5))
+    Index <- which.max(Com2)
+    
+    px.farest <- Com1[Index]
+    px <- px.farest
+    
     mu1 <-  function(N) N * px
     sigma1 <- function(N) sqrt(((1 - px) * px + var(x) * w1 ^ 2 + 2 * w1 * CE1) * N)
     if (1 / 4 + var(x) * w0 ^ 2 + 2 * w0 * CE0 < 0)  {
